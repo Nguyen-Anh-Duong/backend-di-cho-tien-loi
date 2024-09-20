@@ -7,8 +7,13 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const KeyTokenService = require("./keytoken.service");
 const { getInfoData } = require("../utils");
+const OTPService = require("./otp.service");
+const {sendOTP, sendEmail, sendWelcome} = require("./email.service");
 class AccessService {
-  static async signUp({ email, password, name }) {
+  static async verifyOTPAndSignUp({ email, password, name, otp }) {
+    const isOTPValid = await OTPService.verifyOTP(email, otp);
+    if (!isOTPValid) throw new BadRequestError("Invalid OTP");
+
     const foundUser = await userModel.findOne({ user_email: email }).lean();
     if (foundUser) throw new BadRequestError("Da ton tai user");
     await ApiKeyService.createApiKey();
@@ -19,6 +24,7 @@ class AccessService {
       user_name: name,
     });
     if (newUser) {
+      sendWelcome({email:newUser.user_email, name: newUser.user_name}).catch(err=>console.log(err))
       const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
         modulusLength: 2048,
         publicKeyEncoding: {
@@ -51,7 +57,6 @@ class AccessService {
         publicKey: keyStore.publicKey,
       });
       if (!tokens) throw new BadRequestError("create token pair failed");
-
       return {
         user: getInfoData({object: newUser, fields: ["_id", "user_email", "user_name"]}),
         tokens,
@@ -103,6 +108,20 @@ class AccessService {
       code: 200,
       metadata: getInfoData({object: delKey, fields: ["_id", "refreshToken", "refreshTokensUsed"]}),
     }
+  }
+
+  static async preSignUp({ email, password, name }) {
+    const foundUser = await userModel.findOne({ user_email: email }).lean();
+    if (foundUser) throw new BadRequestError("User already exists");
+
+    const otp = await OTPService.generateOTP(email);
+    console.log(otp);
+    //test tang hieu suat khong awaiting coi sao
+    sendOTP({email, name, otp}).catch(err => {
+      console.log(err);
+    })
+
+    return { message: "OTP sent to email for verification", otp };
   }
 
 }

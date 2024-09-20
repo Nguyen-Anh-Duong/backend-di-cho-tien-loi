@@ -11,20 +11,26 @@ const userSchema = new Schema(
     user_email: { type: String, required: true },
     user_password: { type: String, required: true },
     user_slug: { type: String, default: "" },
-    user_role: { type: Schema.Types.ObjectId, ref: "Role" },
+    user_role_system: { type: Schema.Types.ObjectId, ref: "Role" },
     user_sex: { type: String, default: "" },
     user_phone: { type: String, default: "" },
     user_avatar: { type: String, default: "" },
     user_status: {
       type: String,
       enum: ["pending", "active", "block"],
-      default: "pending",
+      default: "active",
     },
     user_family_group: { type: Schema.Types.ObjectId, ref: "FamilyGroup" },
     user_role_group: {
-      type: String,
-      enum: ["member", "admin"],
-      default: "member",
+      groupId: {
+        type: Schema.Types.ObjectId,
+        ref: 'FamilyGroup'
+      },
+      role: {
+        type: String,
+        enum: ['admin', 'member'],
+        default: 'member'
+      }
     },
     user_shopping_lists: [
       {

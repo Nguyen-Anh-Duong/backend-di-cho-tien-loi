@@ -5,7 +5,8 @@ const accessController = require("../../controllers/access.controller");
 const { authentication } = require("../../auth/checkAuth");
 const router = express.Router();
 
-router.post("/signup", asyncHandler(accessController.signUp));
+router.post("/pre_signup", asyncHandler(accessController.preSignUp));
+router.post("/verify_otp_and_signup", asyncHandler(accessController.verifyOTPAndSignUp));
 router.post("/login", asyncHandler(accessController.logIn));
 
 //authentication
