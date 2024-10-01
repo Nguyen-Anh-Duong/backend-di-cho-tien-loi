@@ -15,7 +15,6 @@ const recipeSchema = new Schema(
         unit: { type: String, required: true },
       },
     ],
-    recipe_instruction: { type: String, default: "" },
     recipe_cook_time: { type: String, default: "" },
     recipe_category: { type: String, default: "" },
     recipe_image: { type: String, default: "" },

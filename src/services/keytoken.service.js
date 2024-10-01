@@ -26,6 +26,12 @@ class KeyTokenService {
   static findByUserId = async (userId) => {
     return await keytokenModel.findOne({ userId: userId });
   };
+  /**
+   * 
+   * @param {*} param0 
+   * @returns 
+   * @description create or update in database
+   */
   static createKeyToken = async ({
     userId,
     publicKey,

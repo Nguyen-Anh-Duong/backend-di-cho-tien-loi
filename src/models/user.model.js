@@ -11,7 +11,7 @@ const userSchema = new Schema(
     user_email: { type: String, required: true },
     user_password: { type: String, required: true },
     user_slug: { type: String, default: "" },
-    user_role_system: { type: Schema.Types.ObjectId, ref: "Role" },
+    user_role_system: { type: Schema.Types.ObjectId, ref: "Role", default: null },
     user_sex: { type: String, default: "" },
     user_phone: { type: String, default: "" },
     user_avatar: { type: String, default: "" },

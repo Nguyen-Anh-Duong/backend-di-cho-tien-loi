@@ -2,7 +2,7 @@
 
 const { resolveHostname } = require("nodemailer/lib/shared")
 const { SuccessResponse } = require("../core/success.response")
-const { createRole, getRoleList, newResource, getResources } = require("../services/rbac.service")
+const { createRole, getRoleList, newResource, getResources, roleList } = require("../services/rbac.service")
 
 class RbacController {
     newRole = async(req, res, next) => {
@@ -21,7 +21,7 @@ class RbacController {
     getRoles = async(req, res, next) => {
         new SuccessResponse({
             message: "get role thanh cong",
-            metadata: await getRoleList()
+            metadata: await getRoleList({})
         }).send(res)
     }
     
