@@ -48,7 +48,7 @@ const authentication = async (req, res, next) => {
         if(userId !== decodeUser.userId) throw new BadRequestError("Invalid User");
         req.keyStore = keyStore;
         console.log(keyStore);
-        req.user = decodeUser; //decodeUser: {userId, email}
+        req.user = decodeUser; //decodeUser: {userId, email, roleId}
         req.refreshToken = refreshToken;
         return next();
       } catch (error) {
@@ -62,7 +62,7 @@ const authentication = async (req, res, next) => {
         const decodeUser = await JWT.verify(accessToken, keyStore.publicKey);
         if(userId !== decodeUser.userId) throw new BadRequestError("Invalid User");
         req.keyStore = keyStore;
-        req.user = decodeUser;
+        req.user = decodeUser;  //decodeUser: {userId, email, roleId}
         return next();
       } catch (error) {
         next(error);

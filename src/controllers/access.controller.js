@@ -28,5 +28,41 @@ class AccessController {
       metadata: await AccessService.logOut(req.keyStore),
     }).send(res);
   }
+  refreshToken = async (req, res, next) => {
+    new SuccessResponse({
+      message: "refresh token success!!",
+      metadata: await AccessService.refreshToken(req.body),
+    }).send(res);
+  }
+  requestResetPassword = async (req, res, next) => {
+    new SuccessResponse({
+      message: "request reset password success!!",
+      metadata: await AccessService.requestResetPassword(req.body),
+    }).send(res);
+  }
+  changePassword = async (req, res, next) => {
+    new SuccessResponse({
+      message: "change password success!!",
+      metadata: await AccessService.changePassword(req.body),
+    }).send(res);
+  }
+  resetPassword = async (req, res, next) => {
+    new SuccessResponse({
+      message: "reset password success!!",
+      metadata: await AccessService.resetPassword(req.body),
+    }).send(res);
+  }
+  checkOTPResetPassword = async (req, res, next) => {
+    new SuccessResponse({
+      message: "check OTP reset password success!!",
+      metadata: await AccessService.checkOTPResetPassword(req.body),
+    }).send(res);
+  }
+  resetPassword = async (req, res, next) => {
+    new SuccessResponse({
+      message: "reset password success!!",
+      metadata: await AccessService.resetPassword(req.body),
+    }).send(res);
+  }
 }
 module.exports = new AccessController();

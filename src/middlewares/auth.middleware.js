@@ -2,6 +2,7 @@ const { NotFoundError, ForbiddenError } = require("../core/error.response");
 const userModel = require("../models/user.model");
 const rbac = require("../middlewares/role.middleware")
 const {getRoleList} = require("../services/rbac.service")
+const roleModel = require("../models/role.schema")
 const checkSystemPermission =  (action, resource) => {
   return async (req, res, next) => {
     try {
@@ -14,6 +15,9 @@ const checkSystemPermission =  (action, resource) => {
       console.log(rol_name+"******");
       const userData = await userModel.findById(userId).populate('user_role_system')
       console.log(userData)
+      const roleId = req.user.roleId;
+      const role = await roleModel.findById(roleId)
+      console.log(roleId+"==roleId")
       if(rol_name!==userData.user_role_system.rol_name) {
         throw new ForbiddenError("You are not allowed to access this resource")
       }

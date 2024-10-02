@@ -5,6 +5,9 @@ const crypto = require("crypto");
 const keytokenModel = require("../models/keytoken.model");
 
 class KeyTokenService {
+  static findByRefreshToken = async (refreshToken) => {
+    return await keytokenModel.findOne({ refreshToken });
+  };
   static removeRefreshTokenById = async ({id, refreshToken}) => {
     const filter = {_id: id};
     const updateSet = {

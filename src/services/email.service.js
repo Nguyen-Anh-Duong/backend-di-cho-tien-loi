@@ -1,7 +1,8 @@
 'use strict';
 
 const nodemailer = require('nodemailer');
-const {VERIFICATION_EMAIL_TEMPLATE, WELCOME_TEMPLATE} = require('../templates/index');
+const {VERIFICATION_EMAIL_TEMPLATE, WELCOME_TEMPLATE, PASSWORD_RESET_REQUEST_TEMPLATE} = require('../templates/index');
+const OTPService = require('./otp.service');
 
 const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE ,
@@ -28,6 +29,7 @@ const sendEmail = async ({email, subject = "No Subject", text = "No Text", html 
     }
 }
 const sendOTP = async ({email, name, otp}) => {
+    if (!otp) otp = await OTPService.generateOTP(email);
     const appName = process.env.APP_NAME
     const html = VERIFICATION_EMAIL_TEMPLATE
         .replace('{userName}', name)
@@ -35,7 +37,26 @@ const sendOTP = async ({email, name, otp}) => {
         .replace('{expirationTime}', 2)
         .replace('{appName}', appName);
     const subject = "Verify Your Email";
-    return await sendEmail({email, subject, html});
+    await sendEmail({email, subject, html});
+    return {
+        toUserEmail: email,
+        OTP: otp
+    }
+}
+const sendOTPResetPassword = async ({email, name, otp}) => {
+    if (!otp) otp = await OTPService.generateOTP(email);
+    const appName = process.env.APP_NAME
+    const html = PASSWORD_RESET_REQUEST_TEMPLATE
+        .replace('{userName}', name)
+        .replace('{verificationCode}', otp)
+        .replace('{expirationTime}', 2)
+        .replace('{appName}', appName);
+    const subject = "Reset Your Password";
+    await sendEmail({email, subject, html});
+    return {
+        toUserEmail: email,
+        OTP: otp
+    }
 }
 
 const sendWelcome = async({email, name})=> {
@@ -50,5 +71,6 @@ const sendWelcome = async({email, name})=> {
 module.exports = {
     sendEmail,
     sendOTP,
-    sendWelcome
+    sendWelcome,
+    sendOTPResetPassword
 }
