@@ -5,7 +5,8 @@ const { asyncHandler } = require('../../helpers/asyncHandler')
 const userController = require('../../controllers/user.controller')
 const router = express.Router()
 
-router.post('/update', asyncHandler(userController.updateRole))
-router.get('/viewAny', checkSystemPermission("read", "user"), asyncHandler(userController.viewAny))
+// router.post('/updateRole', asyncHandler(userController.updateRole))
+router.get('/viewAny', checkSystemPermission("readAny", "user"), asyncHandler(userController.viewAny))
+router.patch('/updateProfile/:userId', checkSystemPermission("updateOwn", "user"), asyncHandler(userController.updateProfile))
 
 module.exports = router

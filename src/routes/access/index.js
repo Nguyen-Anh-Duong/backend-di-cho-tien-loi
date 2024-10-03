@@ -7,7 +7,6 @@ const router = express.Router();
 
 //pre auth
 router.post("/request_reset_password", asyncHandler(accessController.requestResetPassword));
-router.post("/check_otp_reset_password", asyncHandler(accessController.checkOTPResetPassword));
 router.post("/reset_password", asyncHandler(accessController.resetPassword));
 router.post("/pre_signup", asyncHandler(accessController.preSignUp));
 router.post("/verify_otp_and_signup", asyncHandler(accessController.verifyOTPAndSignUp));

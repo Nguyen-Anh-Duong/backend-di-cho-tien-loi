@@ -1,8 +1,8 @@
 'use strict'
 
-const { NotFoundError } = require("../core/error.response")
+const { NotFoundError, BadRequestError } = require("../core/error.response")
 const userModel = require("../models/user.model")
-const {convertToObjectId} = require('../utils')
+const {convertToObjectId, getInfoData} = require('../utils')
 class UserService {
     static findAllUsers = async () => {
         return await userModel.find()
@@ -23,8 +23,20 @@ class UserService {
             new: true
         }
         const foundUser = await userModel.findByIdAndUpdate(query, updateSet, options);
-        return foundUser
-        
+        return foundUser  
+    }
+    static updateProfileUser = async ({userId, user_name, user_sex, user_phone, user_avatar }) => {
+        const query = {_id: userId}
+        let updateSet = {}
+        if (user_name) updateSet.user_name = user_name;
+        if (user_sex) updateSet.user_sex = user_sex;
+        if (user_phone) updateSet.user_phone = user_phone;
+        if (user_avatar) updateSet.user_avatar = user_avatar;
+        const options = {new: true}
+        const updateUser = await userModel.findOneAndUpdate(query, updateSet, options)
+        if(!updateUser)
+            throw new BadRequestError("Update khong thanh cong")
+        return getInfoData({object: updateUser, fields: ["user_name", "user_email", "user_phone", "user_sex", "user_avatar", "user_role_system"]})
     }
 }
 
