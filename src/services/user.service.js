@@ -38,6 +38,17 @@ class UserService {
             throw new BadRequestError("Update khong thanh cong")
         return getInfoData({object: updateUser, fields: ["user_name", "user_email", "user_phone", "user_sex", "user_avatar", "user_role_system"]})
     }
+    static blockUser = async ({userId}) => {
+        const query = {_id: userId}
+        let updateSet = {user_status: "block"}
+        const options = {new: true}
+
+        const blockUser = await userModel.findOneAndUpdate(query, updateSet, options)
+        if(!blockUser) {
+            throw new BadRequestError("Block khong thanh cong")
+        }
+        return getInfoData({object: blockUser, fields: ["user_name", "user_email", "user_status"]  })
+    }
 }
 
 module.exports = UserService
