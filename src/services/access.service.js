@@ -1,5 +1,5 @@
 "use strict";
-const { BadRequestError, NotFoundError } = require("../core/error.response");
+const { BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user.model");
 const ApiKeyService = require("./apiKey.service");
@@ -169,19 +169,20 @@ class AccessService {
     if(!foundUser) throw new NotFoundError("User not found")
     const otp = await OTPService.generateOTP(email)
     await sendOTPResetPassword({email, name: foundUser.user_name, otp})
-    return {toUserEmail: email}
+    //TODO: sau cmt otp lai
+    return {
+      toUserEmail: email, 
+      // otp
+    }
   }
-  static async resetPassword({email, password}){
+  static async resetPassword({email, password, otp}){
+    const isValidOTP = await OTPService.verifyOTP(email, otp)
+    if(!isValidOTP) throw new ForbiddenError("Invalid OTP")
     const foundUser = await userModel.findOne({user_email: email}).lean()
     if(!foundUser) throw new NotFoundError("User not found")
     const passwordHash = await bcrypt.hash(password, 10)
     await userModel.findByIdAndUpdate(foundUser._id, {user_password: passwordHash})
     return {message: "Reset password success"}
-  }
-  static async checkOTPResetPassword({email, otp}){
-    const isOTPValid = await OTPService.verifyOTP(email, otp);
-    if (!isOTPValid) throw new BadRequestError("Invalid OTP");
-    return {message: "OTP is valid"}
   }
   static async changePassword({email, oldPassword, newPassword}){
     if(!oldPassword || !newPassword) throw new BadRequestError("Old password and new password are required")
