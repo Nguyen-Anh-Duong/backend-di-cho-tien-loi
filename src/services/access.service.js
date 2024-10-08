@@ -1,5 +1,9 @@
 "use strict";
-const { BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
+const {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} = require("../core/error.response");
 const bcrypt = require("bcrypt");
 const userModel = require("../models/user.model");
 const ApiKeyService = require("./apiKey.service");
@@ -8,7 +12,12 @@ const crypto = require("crypto");
 const KeyTokenService = require("./keytoken.service");
 const { getInfoData } = require("../utils");
 const OTPService = require("./otp.service");
-const { sendOTP, sendEmail, sendWelcome, sendOTPResetPassword } = require("./email.service");
+const {
+  sendOTP,
+  sendEmail,
+  sendWelcome,
+  sendOTPResetPassword,
+} = require("./email.service");
 const roleSchema = require("../models/role.schema");
 class AccessService {
   static async verifyOTPAndSignUp({ email, password, name, otp }) {
@@ -18,7 +27,14 @@ class AccessService {
     const foundUser = await userModel.findOne({ user_email: email }).lean();
     if (foundUser) throw new BadRequestError("Da ton tai user");
     await ApiKeyService.createApiKey();
-    const defaultRole = await roleSchema.findOne({rol_name: "user"}).lean();
+    const defaultRole = await roleSchema.findOne({ rol_name: "user" }).lean();
+    // if (!defaultRole) {
+    //   const newRole = await roleSchema.create({
+    //     rol_name: "user" /*, other fields */,
+    //     rol_slug: "hhehe",
+    //   });
+    //   console.log("Default 'user' role created:", newRole);
+    // }
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = await userModel.create({
       user_email: email,
@@ -140,62 +156,77 @@ class AccessService {
 
     return { message: "OTP sent to email for verification", otp };
   }
-  static async refreshToken({refreshToken }){
-    const keyStore = await KeyTokenService.findByRefreshToken(refreshToken)
-    if(!keyStore) throw new NotFoundError("Not found keyStore")
+  static async refreshToken({ refreshToken }) {
+    const keyStore = await KeyTokenService.findByRefreshToken(refreshToken);
+    if (!keyStore) throw new NotFoundError("Not found keyStore");
 
     //check refreshToken het han hay chua
-    const decoded = jwt.verify(refreshToken, keyStore.publicKey)
-    if (!decoded) throw new BadRequestError("Invalid refresh token")
-    if(decoded.exp < Date.now()/1000) throw new BadRequestError("Refresh token expired")
-    
-    console.log(decoded)
-    const {privateKey, publicKey} = keyStore
-    const payload = {userId: decoded.userId, email: decoded.email, roleId: decoded.roleId}
+    const decoded = jwt.verify(refreshToken, keyStore.publicKey);
+    if (!decoded) throw new BadRequestError("Invalid refresh token");
+    if (decoded.exp < Date.now() / 1000)
+      throw new BadRequestError("Refresh token expired");
+
+    console.log(decoded);
+    const { privateKey, publicKey } = keyStore;
+    const payload = {
+      userId: decoded.userId,
+      email: decoded.email,
+      roleId: decoded.roleId,
+    };
 
     const tokens = await KeyTokenService.createTokenPair({
-      payload, privateKey, publicKey
-    })
+      payload,
+      privateKey,
+      publicKey,
+    });
     return {
       user: getInfoData({
         object: decoded,
         fields: ["userId", "email", "roleId"],
       }),
       tokens,
-    }
+    };
   }
-  static async requestResetPassword({email}){
-    const foundUser = await userModel.findOne({user_email: email}).lean()
-    if(!foundUser) throw new NotFoundError("User not found")
-    const otp = await OTPService.generateOTP(email)
-    await sendOTPResetPassword({email, name: foundUser.user_name, otp})
+  static async requestResetPassword({ email }) {
+    const foundUser = await userModel.findOne({ user_email: email }).lean();
+    if (!foundUser) throw new NotFoundError("User not found");
+    const otp = await OTPService.generateOTP(email);
+    await sendOTPResetPassword({ email, name: foundUser.user_name, otp });
     //TODO: sau cmt otp lai
     return {
-      toUserEmail: email, 
+      toUserEmail: email,
       // otp
-    }
+    };
   }
-  static async resetPassword({email, password, otp}){
-    const isValidOTP = await OTPService.verifyOTP(email, otp)
-    if(!isValidOTP) throw new ForbiddenError("Invalid OTP")
-    const foundUser = await userModel.findOne({user_email: email}).lean()
-    if(!foundUser) throw new NotFoundError("User not found")
-    const passwordHash = await bcrypt.hash(password, 10)
-    await userModel.findByIdAndUpdate(foundUser._id, {user_password: passwordHash})
-    return {message: "Reset password success"}
+  static async resetPassword({ email, password, otp }) {
+    const isValidOTP = await OTPService.verifyOTP(email, otp);
+    if (!isValidOTP) throw new ForbiddenError("Invalid OTP");
+    const foundUser = await userModel.findOne({ user_email: email }).lean();
+    if (!foundUser) throw new NotFoundError("User not found");
+    const passwordHash = await bcrypt.hash(password, 10);
+    await userModel.findByIdAndUpdate(foundUser._id, {
+      user_password: passwordHash,
+    });
+    return { message: "Reset password success" };
   }
-  static async changePassword({email, oldPassword, newPassword}){
-    if(!oldPassword || !newPassword) throw new BadRequestError("Old password and new password are required")
-    const foundUser = await userModel.findOne({user_email: email}).lean()
-    if(!foundUser) throw new NotFoundError("User not found")
-    const passwordHash = foundUser.user_password
-    const match = await bcrypt.compare(oldPassword, passwordHash)
-    if(!match) throw new BadRequestError("Invalid old password")
-    const newPasswordHash = await bcrypt.hash(newPassword, 10)
-    await userModel.findByIdAndUpdate(foundUser._id, {user_password: newPasswordHash})
-    return {email: foundUser.user_email, name: foundUser.user_name, newPassword: newPassword}
+  static async changePassword({ email, oldPassword, newPassword }) {
+    if (!oldPassword || !newPassword)
+      throw new BadRequestError("Old password and new password are required");
+    const foundUser = await userModel.findOne({ user_email: email }).lean();
+    if (!foundUser) throw new NotFoundError("User not found");
+    const passwordHash = foundUser.user_password;
+    const match = await bcrypt.compare(oldPassword, passwordHash);
+    if (!match) throw new BadRequestError("Invalid old password");
+    const newPasswordHash = await bcrypt.hash(newPassword, 10);
+    await userModel.findByIdAndUpdate(foundUser._id, {
+      user_password: newPasswordHash,
+    });
+    return {
+      email: foundUser.user_email,
+      name: foundUser.user_name,
+      newPassword: newPassword,
+    };
   }
-  
 }
 
 module.exports = AccessService;
