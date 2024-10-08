@@ -9,6 +9,8 @@ const router = express.Router();
 
 router.use(authentication);
 
-router.post("/", asyncHandler(recipeController.CreateRecipe));
+router.post("/", asyncHandler(recipeController.createRecipe));
+router.patch("/:id", recipeController.updateRecipe);
+router.delete("/:id", recipeController.deleteRecipe);
 
 module.exports = router;
