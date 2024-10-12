@@ -166,7 +166,6 @@ class AccessService {
     if (decoded.exp < Date.now() / 1000)
       throw new BadRequestError("Refresh token expired");
 
-    console.log(decoded);
     const { privateKey, publicKey } = keyStore;
     const payload = {
       userId: decoded.userId,
