@@ -3,6 +3,12 @@ const { ErrorResponse, NotFoundError } = require("../core/error.response");
 const recipeModel = require("../models/recipe.model");
 
 class RecipeService {
+  static async getAllRecipe() {
+    return await recipeModel.find();
+  }
+  static async getRecipeById(recipeId) {
+    return await recipeModel.findById(recipeId);
+  }
   static async createRecipe(recipe) {
     const newRecipe = recipeModel(recipe);
     await newRecipe.save(recipe);
@@ -10,7 +16,6 @@ class RecipeService {
   }
 
   static async updateRecipe(recipeId, newRecipe) {
-    try {
       const updateRecipe = await recipeModel.findByIdAndUpdate(
         recipeId,
         { $set: newRecipe },
@@ -21,21 +26,14 @@ class RecipeService {
         throw new NotFoundError("Recipe not found", 404);
       }
       return updateRecipe;
-    } catch (error) {
-      throw error;
-    }
   }
 
   static async deleteRecipe(recipeId) {
-    try {
       const deleteRecipe = await recipeModel.findByIdAndDelete(recipeId);
       if (!deleteRecipe) {
         throw new NotFoundError("Recipe not found", 404);
       }
       return deleteRecipe;
-    } catch (error) {
-      throw error;
-    }
   }
 }
 

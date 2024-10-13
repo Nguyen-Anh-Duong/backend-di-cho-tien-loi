@@ -20,7 +20,6 @@ class RecipeController {
   };
 
   updateRecipe = async (req, res, next) => {
-    try {
       const recipeId = req.params.id;
       return new SuccessResponse({
         message: {
@@ -30,14 +29,10 @@ class RecipeController {
         statusCode: 370,
         metadata: await RecipeService.updateRecipe(recipeId, req.body),
       }).send(res);
-    } catch (error) {
-      next(error);
-    }
+    
   };
 
   deleteRecipe = async (req, res, next) => {
-    try {
-      //
       const recipeId = req.params.id;
       return new SuccessResponse({
         message: {
@@ -47,9 +42,18 @@ class RecipeController {
         statusCode: 376,
         metadata: await RecipeService.deleteRecipe(recipeId),
       }).send(res);
-    } catch (error) {
-      next(error);
-    }
+
+  };
+  getAllRecipe = async (req, res, next) => {
+    return new SuccessResponse({
+      metadata: await RecipeService.getAllRecipe(),
+    }).send(res);
+  };
+  getRecipeById = async (req, res, next) => {
+    const recipeId = req.params.id;
+    return new SuccessResponse({
+      metadata: await RecipeService.getRecipeById(recipeId),
+    }).send(res);
   };
 }
 

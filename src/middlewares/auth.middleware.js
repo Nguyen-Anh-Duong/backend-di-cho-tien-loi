@@ -16,6 +16,7 @@ const checkSystemPermission =  (action, resource) => {
      
     
       const userData = await userModel.findById(currentUser.userId).populate('user_role_system')
+      console.log(userData)
       if(rol_name != userData.user_role_system.rol_name || userData.user_role_system.rol_name === "user") {
             throw new ForbiddenError("You are user not admin")
       }
