@@ -11,7 +11,6 @@ const recipeSchema = new Schema(
       {
         name: { type: String, required: true },
         measure: { type: String, default: "" },
-
       },
     ],
     recipe_cook_time: { type: String, default: "" },
