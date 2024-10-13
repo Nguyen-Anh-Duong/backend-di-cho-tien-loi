@@ -6,22 +6,24 @@ const COLLECTION_NAME = "Recipes";
 const recipeSchema = new Schema(
   {
     recipe_name: { type: String, required: true },
-    recipe_desciption: { type: String, default: "" },
+    recipe_description: { type: String, default: "" },
     recipe_ingredients: [
       {
         name: { type: String, required: true },
-        measure: {type: String, default: ''}
+        measure: { type: String, default: "" },
+
       },
     ],
     recipe_cook_time: { type: String, default: "" },
     recipe_youtube_url: {
-      type: String, default: ""
+      type: String,
+      default: "",
     },
     recipe_category: { type: String, default: "" },
     recipe_image: { type: String, default: "" },
     is_published: { type: Boolean, default: false },
     is_draft: { type: Boolean, default: true },
-    recipe_id_crawl: {type: String, required: true}
+    recipe_id_crawl: { type: String, required: true },
   },
   {
     timestamps: true,
