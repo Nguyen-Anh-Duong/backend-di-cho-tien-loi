@@ -1,5 +1,5 @@
 "use strict";
-const { BadRequestError, NotFoundError } = require("../core/error.response");
+const { BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
 const apikeyModel = require("../models/apikey.model");
 const KeyTokenService = require("../services/keytoken.service");
 const JWT = require("jsonwebtoken");
@@ -34,10 +34,10 @@ const apiKey = async (req, res, next) => {
 const authentication = async (req, res, next) => {
   try {
     const userId = req.headers[HEADER?.CLIENT_ID];
-    if (!userId) throw new NotFoundError("Invalid Request");
+    if (!userId) throw new ForbiddenError("Invalid Request");
 
     const keyStore = await KeyTokenService.findByUserId(userId);
-    if (!keyStore) throw new NotFoundError("Not found keyStore");
+    if (!keyStore) throw new ForbiddenError("Not found keyStore");
 
     //check refreshToken
     if (req.headers[HEADER.REFRESHTOKEN]) {
@@ -46,7 +46,7 @@ const authentication = async (req, res, next) => {
         const decodeUser = await JWT.verify(refreshToken, keyStore.publicKey);
         //coi dung user k
         if (userId !== decodeUser.userId)
-          throw new BadRequestError("Invalid User");
+          throw new ForbiddenError("Invalid User");
         req.keyStore = keyStore;
         req.user = decodeUser; //decodeUser: {userId, email, roleId}
         req.refreshToken = refreshToken;
@@ -61,7 +61,7 @@ const authentication = async (req, res, next) => {
         const accessToken = req.headers[HEADER.AUTHORIZATION];
         const decodeUser = await JWT.verify(accessToken, keyStore.publicKey);
         if (userId !== decodeUser.userId)
-          throw new BadRequestError("Invalid User");
+          throw new ForbiddenError("Invalid User");
         req.keyStore = keyStore;
         req.user = decodeUser; //decodeUser: {userId, email, roleId}
         return next();
@@ -70,7 +70,7 @@ const authentication = async (req, res, next) => {
       }
     }
 
-    throw new BadRequestError("No valid token found");
+    throw new ForbiddenError("No valid token found");
   } catch (error) {
     next(error);
   }
