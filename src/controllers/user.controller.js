@@ -33,5 +33,11 @@ class UserController {
             metadata: await UserService.blockUser(req.params)
         }).send(res)
     }
+    getUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: "Get user success",
+            metadata: await UserService.getUser(req.user.userId)
+        }).send(res)
+    }
 }
 module.exports = new UserController()
