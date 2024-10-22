@@ -34,20 +34,20 @@ const apiKey = async (req, res, next) => {
 const authentication = async (req, res, next) => {
   try {
     const userId = req.headers[HEADER?.CLIENT_ID];
-    if(!userId) throw new NotFoundError("Invalid Request");
+    if (!userId) throw new NotFoundError("Invalid Request");
 
     const keyStore = await KeyTokenService.findByUserId(userId);
-    if(!keyStore) throw new NotFoundError("Not found keyStore");
+    if (!keyStore) throw new NotFoundError("Not found keyStore");
 
     //check refreshToken
-    if(req.headers[HEADER.REFRESHTOKEN]) {
+    if (req.headers[HEADER.REFRESHTOKEN]) {
       try {
         const refreshToken = req.headers[HEADER.REFRESHTOKEN];
         const decodeUser = await JWT.verify(refreshToken, keyStore.publicKey);
         //coi dung user k
-        if(userId !== decodeUser.userId) throw new BadRequestError("Invalid User");
+        if (userId !== decodeUser.userId)
+          throw new BadRequestError("Invalid User");
         req.keyStore = keyStore;
-        console.log(keyStore);
         req.user = decodeUser; //decodeUser: {userId, email, roleId}
         req.refreshToken = refreshToken;
         return next();
@@ -56,23 +56,24 @@ const authentication = async (req, res, next) => {
       }
     }
     //check accessToken
-    if(req.headers[HEADER.AUTHORIZATION]) {
+    if (req.headers[HEADER.AUTHORIZATION]) {
       try {
         const accessToken = req.headers[HEADER.AUTHORIZATION];
         const decodeUser = await JWT.verify(accessToken, keyStore.publicKey);
-        if(userId !== decodeUser.userId) throw new BadRequestError("Invalid User");
+        if (userId !== decodeUser.userId)
+          throw new BadRequestError("Invalid User");
         req.keyStore = keyStore;
-        req.user = decodeUser;  //decodeUser: {userId, email, roleId}
+        req.user = decodeUser; //decodeUser: {userId, email, roleId}
         return next();
       } catch (error) {
         next(error);
       }
-    }  
+    }
 
     throw new BadRequestError("No valid token found");
   } catch (error) {
     next(error);
   }
-}
+};
 
 module.exports = { apiKey, authentication };

@@ -15,5 +15,23 @@ class UserController {
             metadata: await UserService.updateRole(req.body)
         }).send(res)
     }
+    updateProfile = async(req, res, next) => {
+        new SuccessResponse({
+            message: {
+                en: "Update User Profile Success!",
+                vi: "Cap nhat thong tin nguoi dung thanh cong!"
+            },
+            metadata: await UserService.updateProfileUser({...req.body, ...req.params})
+        }).send(res)
+    }
+    blockUser = async(req, res, next) => {
+        new SuccessResponse({
+            message: {
+                en: "Block User Success!",
+                vi: "Chan nguoi dung thanh cong!"
+            },
+            metadata: await UserService.blockUser(req.params)
+        }).send(res)
+    }
 }
 module.exports = new UserController()

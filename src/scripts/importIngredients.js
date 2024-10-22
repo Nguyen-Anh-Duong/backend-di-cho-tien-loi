@@ -29,20 +29,21 @@ async function importIngredients() {
             if(ingredient.idIngredient>=index) break
             count++
             const strIngredient = ingredient?.strIngredient || "null";
-            const options = {
-                method: 'POST',
-                url: 'https://google-api31.p.rapidapi.com/translate',
-                headers: {
-                  'x-rapidapi-key': key,
-                  'x-rapidapi-host': 'google-api31.p.rapidapi.com',
-                  'Content-Type': 'application/json'
-                },
-                data: {
-                    text: strIngredient,
-                  to: 'vi',
-                  from_lang: ''
-                }
-              };
+            // const options = {
+            //     method: 'POST',
+            //     url: 'https://google-api31.p.rapidapi.com/translate',
+            //     headers: {
+            //       'x-rapidapi-key': key,
+            //       'x-rapidapi-host': 'google-api31.p.rapidapi.com',
+            //       'Content-Type': 'application/json'
+            //     },
+            //     data: {
+            //         text: strIngredient,
+            //       to: 'vi',
+            //       from_lang: ''
+            //     }
+            //   };
+            
 
               const {data} = await axios.post('https://libretranslate.com/translate', {
                 q: strIngredient,
