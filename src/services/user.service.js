@@ -4,6 +4,11 @@ const { NotFoundError, BadRequestError } = require("../core/error.response")
 const userModel = require("../models/user.model")
 const {convertToObjectId, getInfoData} = require('../utils')
 class UserService {
+    static getUser = async (userId) => {
+        const user = await userModel.findById(userId);
+
+        return getInfoData({object: user, fields: ["user_name", "user_email", "user_phone", "user_sex", "user_avatar"]})
+    }
     static findAllUsers = async () => {
         return await userModel.find()
     }

@@ -23,12 +23,10 @@ app.use("/", require("./routes"));
 app.use((req, res, next) => {
   const error = new Error("This route is not exist!!");
   error.status = 404;
-  console.log(error.status);
   next(error);
 });
 
 app.use((error, req, res, next) => {
-  console.log(error.status);
   const statusCode = error.status || 500;
   return res.status(statusCode).json({
     status: "error",
