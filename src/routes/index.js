@@ -8,7 +8,7 @@ const router = express.Router();
 router.use("/v1/api", require("./access"));
 
 //check apikey
-router.use(apiKey);
+// router.use(apiKey);
 
 router.use("/v1/api/ingredients", require("./ingredients"));
 router.use("/v1/api/recipe", require("./recipes"));
