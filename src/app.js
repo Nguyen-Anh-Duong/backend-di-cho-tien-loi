@@ -3,6 +3,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
+const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
 const app = express();
 
@@ -20,12 +21,14 @@ app.use("/", require("./routes"));
 //handle error
 
 app.use((req, res, next) => {
-  const error = new Error("Not found");
+  const error = new Error("This route is not exist!!");
   error.status = 404;
+  console.log(error.status);
   next(error);
 });
 
 app.use((error, req, res, next) => {
+  console.log(error.status);
   const statusCode = error.status || 500;
   return res.status(statusCode).json({
     status: "error",
