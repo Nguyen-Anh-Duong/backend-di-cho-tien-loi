@@ -13,6 +13,7 @@ const HEADER = {
 const apiKey = async (req, res, next) => {
   try {
     const key = req.headers[HEADER.API_KEY]?.toString();
+    console.log(key);
     if (!key) {
       return res.status(403).json({
         message: "Forbidden Error 1",
@@ -21,6 +22,7 @@ const apiKey = async (req, res, next) => {
 
     //check in db
     const objKey = await apikeyModel.findOne({ key: key }).lean();
+
     if (!objKey) {
       return res.status(403).json({
         message: "Forbidden Error 2",
@@ -34,8 +36,7 @@ const apiKey = async (req, res, next) => {
 const authentication = async (req, res, next) => {
   try {
     const userId = req.headers[HEADER?.CLIENT_ID];
-    if (!userId) throw new NotFoundError("Invalid Request");
-
+    if (!userId) throw new NotFoundError("Invalid Request heheh");
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new NotFoundError("Not found keyStore");
 

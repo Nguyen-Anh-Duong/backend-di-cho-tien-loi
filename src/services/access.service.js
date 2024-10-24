@@ -58,7 +58,7 @@ class AccessService {
         },
       });
 
-      console.log({ privateKey, publicKey });
+      //console.log({ privateKey, publicKey });
 
       //luu vao db
       const keyStore = await KeyTokenService.createKeyToken({
@@ -66,7 +66,6 @@ class AccessService {
         privateKey,
         publicKey,
       });
-      console.log(keyStore);
 
       const payload = {
         userId: newUser._id,
@@ -148,7 +147,6 @@ class AccessService {
     if (foundUser) throw new BadRequestError("User already exists");
 
     const otp = await OTPService.generateOTP(email);
-    console.log(otp);
     //test tang hieu suat khong awaiting coi sao
     await sendOTP({ email, name, otp }).catch((err) => {
       console.log(err);
