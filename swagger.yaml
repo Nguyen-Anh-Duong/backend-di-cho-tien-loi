@@ -1,0 +1,654 @@
+openapi: 3.0.3
+info:
+  title: Di cho tien loi hehehe
+  description: |-
+    Api cho ung dung di cho tien loi
+
+  contact:
+    email: nguyenanhduong112004@gmail.com
+  version: 1.0.0
+servers:
+  - url: http://localhost:3056/v1/api
+  - url: http://54.251.104.133/v1/api
+tags:
+  - name: basket
+    description: Everything about basket
+  - name: recipe
+    description: Operations about recipe
+paths:
+  /baskets:
+    post:
+      tags:
+        - basket
+      summary: create new basket
+      description: Create new basket
+      operationId: createBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: name of basket
+                  example: Shopping list 25/10/2024
+                description:
+                  type: string
+                  description: description of this basket
+                  example: buy at supermarket
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Tao gio hang thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list 25/10/2024
+                      description:
+                        type: string
+                        example: buy at supermarket
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671a980611f046bbde5d7102
+                      ingredients:
+                        type: array
+                        description: ingredients of basket
+                        items:
+                          type: object
+                        example: []
+
+        "403":
+          description: unauthorize
+        "500":
+          description: "Server error"
+
+    get:
+      tags:
+        - basket
+      summary: get all baskets
+      description: get all basket of user
+      operationId: getAllBaskets
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Basket"
+
+  /baskets/{basketId}:
+    patch:
+      tags:
+        - basket
+      summary: update a basket
+      description: update basket by basketid
+      operationId: updateBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      parameters:
+        - name: basketId
+          in: path
+          required: true
+          description: ID of the basket to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: name of basket
+                  example: Shopping list at 25/10/2024 and something
+                description:
+                  type: string
+                  description: description of this basket
+                  example: buy at supermarket and something
+
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Cap nhat gio hang thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list at 25/10/2024 and something
+                      description:
+                        type: string
+                        example: buy at supermarket and something
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671a980611f046bbde5d7102
+                      ingredients:
+                        type: array
+                        items:
+                          type: object
+                        description: ingredients of basket
+                        example: []
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+
+    delete:
+      tags:
+        - basket
+      summary: delete a basket
+      description: delete basket by basketid
+      operationId: deleteBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      parameters:
+        - name: basketId
+          in: path
+          required: true
+          description: ID of the basket to delete
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Xoa gio hang thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list at 25/10/2024 and something
+                      description:
+                        type: string
+                        example: buy at supermarket and something
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671a980611f046bbde5d7102
+                      ingredients:
+                        type: array
+                        description: ingredients of basket
+                        items:
+                          type: object
+                        example: []
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+
+    get:
+      tags:
+        - basket
+      summary: get a basket
+      description: get basket by basketid
+      operationId: getBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      parameters:
+        - name: basketId
+          in: path
+          required: true
+          description: ID of the basket want to get
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Basket"
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+
+  /baskets/ingredients:
+    post:
+      tags:
+        - basket
+      summary: create new ingredient
+      description: create new ingredient for a basket
+      operationId: createIngredientForBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basketId:
+                  type: string
+                  description: id of basket
+                  format: mongoId
+                  example: 671822ae6024e6630bb87a1a
+                ingredients:
+                  type: array
+                  description: list of ingredient want to create
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: name of ingredient
+                        example: thit bo
+                      quantity:
+                        type: number
+                        description: quantity of ingredient
+                        example: 2
+                      category:
+                        type: string
+                        description: category of ingredient
+                        example: thit
+                      unit:
+                        type: string
+                        description: unit of ingredient
+                        example: kg
+
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Them ingredient thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list at 25/10/2024 and something
+                      description:
+                        type: string
+                        example: buy at supermarket and something
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671822ae6024e6630bb87a1a
+                      ingredients:
+                        type: array
+                        description: ingredients of basket
+                        items:
+                          type: object
+                        example:
+                          [
+                            {
+                              "name": "thit bo",
+                              "quantity": 2,
+                              "category": "thit",
+                              "unit": "kg",
+                              "status": "pending",
+                              "_id": "671c6bf12d01f20adb69a778",
+                            },
+                          ]
+        "400":
+          description: bad request
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+    patch:
+      tags:
+        - basket
+      summary: update
+      description: update ingredient in a basket
+      operationId: updateIngredientForBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basketId:
+                  type: string
+                  description: id of basket
+                  format: mongoId
+                  example: 671822ae6024e6630bb87a1a
+                ingredients:
+                  type: array
+                  description: list of ingredient want to create
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: name of ingredient
+                        example: thit bo
+                      quantity:
+                        type: number
+                        description: quantity of ingredient
+                        example: 2
+                      category:
+                        type: string
+                        description: category of ingredient
+                        example: thit
+                      unit:
+                        type: string
+                        description: unit of ingredient
+                        example: kg
+                      _id:
+                        type: string
+                        format: mongoId
+                        description: id of ingredient
+                        example: 671c6bf12d01f20adb69a778
+
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Cap nhat ingredient thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list at 25/10/2024 and something
+                      description:
+                        type: string
+                        example: buy at supermarket and something
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671822ae6024e6630bb87a1a
+                      ingredients:
+                        type: array
+                        description: ingredients of basket
+                        items:
+                          type: object
+                        example:
+                          [
+                            {
+                              "name": "thit bo",
+                              "quantity": 2,
+                              "category": "thit",
+                              "unit": "kg",
+                              "status": "pending",
+                              "_id": "671c6bf12d01f20adb69a778",
+                            },
+                          ]
+        "400":
+          description: bad request
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+    delete:
+      tags:
+        - basket
+      summary: delete some ingredient
+      description: delete some ingredient by their id
+      operationId: deleteIngredientForBasket
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                basketId:
+                  type: string
+                  description: id of basket
+                  format: mongoId
+                  example: 671822ae6024e6630bb87a1a
+                ingredientIds:
+                  type: array
+                  description: list of ingredientID want to delete
+                  items:
+                    type: string
+                    description: id of ingredient
+                    example:
+                      [
+                        "671c6bf12d01f20adb69a778",
+                        "671c6c1eef705c133aef6763",
+                        "671c6e046778372715ee0bde",
+                      ]
+
+        required: true
+      responses:
+        "200":
+          description: Successful operation. Return a basket after delete its ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Cap nhat ingredient thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    description: all information about this basket
+                    properties:
+                      userId:
+                        type: string
+                        description: id of user who create this basket
+                        format: mongoId
+                        example: 6704912620648e591aad3bb9
+                      name:
+                        type: string
+                        description: name of basket
+                        example: Shopping list at 25/10/2024 and something
+                      description:
+                        type: string
+                        example: buy at supermarket and something
+                      _id:
+                        type: string
+                        description: id of basket
+                        example: 671822ae6024e6630bb87a1a
+                      ingredients:
+                        type: array
+                        description: ingredients of basket
+                        items:
+                          type: object
+                        example: []
+        "403":
+          description: unauthorize
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+components:
+  schemas:
+    Basket:
+      type: object
+      properties:
+        userId:
+          type: string
+          description: id of user who create this basket
+          format: mongoId
+          example: 6704912620648e591aad3bb9
+        name:
+          type: string
+          description: name of basket
+          example: Shopping list 25/10/2024
+        description:
+          type: string
+          example: buy at supermarket
+        _id:
+          type: string
+          description: id of basket
+          example: 671a980611f046bbde5d7102
+        ingredients:
+          type: array
+          description: ingredients of basket
+          items:
+            $ref: "#/components/schemas/Ingredient"
+
+    Ingredient:
+      type: object
+      properties:
+        name:
+          type: string
+          description: name of ingredient
+          example: thit bo
+        quantity:
+          type: number
+          description: quantity of ingredient
+          example: 2
+        category:
+          type: string
+          description: category of ingredient
+          example: thit
+        unit:
+          type: string
+          description: unit of ingredient
+          example: kg
+        status:
+          type: string
+          description: status of ingredient
+          enum: [pending, bought]
+          example: pending
+        _id:
+          type: string
+          format: mongoId
+          description: id of ingredient
+          example: 67184d96fd64d42e3ca7b112
+
+  securitySchemes:
+    RefreshTokenAuth:
+      type: apiKey
+      in: header
+      name: x-rtoken-id
+    ClientAuth:
+      type: apiKey
+      in: header
+      name: x-client-id

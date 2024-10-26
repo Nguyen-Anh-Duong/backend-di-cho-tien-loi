@@ -2,6 +2,7 @@
 
 const Basket = require("../models/baskets.model");
 const ApiError = require("../core/ApiError");
+const { update } = require("lodash");
 
 class BasketService {
   static createBasket = async (req) => {
@@ -9,7 +10,12 @@ class BasketService {
     const { userId } = req.user;
     const newBasket = new Basket({ userId, name, description });
     await newBasket.save();
-    return newBasket;
+
+    const response = newBasket.toObject();
+    delete response.createdAt;
+    delete response.updatedAt;
+
+    return response;
   };
 
   static updateBasket = async (req) => {
@@ -17,11 +23,13 @@ class BasketService {
     const { name, description } = req.body;
     const { userId } = req.user;
 
-    const updateBasket = await Basket.findByIdAndUpdate(
+    const updateBasket = await Basket.findOneAndUpdate(
       { _id: basketId, userId },
       { name, description },
       { new: true, runValidators: true }
-    );
+    )
+      .select("-createdAt -updatedAt -__v")
+      .lean();
 
     if (!updateBasket) throw new ApiError("Khong tim thay gio hang", 404);
     return updateBasket;
@@ -34,7 +42,9 @@ class BasketService {
     const foundAndDelete = await Basket.findOneAndDelete({
       _id: basketId,
       userId,
-    });
+    })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
     if (!foundAndDelete) throw new ApiError("Khong tim thay gio hang", 404);
 
     return foundAndDelete;
@@ -44,14 +54,18 @@ class BasketService {
     const basketId = req.params.basketId;
     const { userId } = req.user;
 
-    const found = await Basket.findOne({ _id: basketId, userId });
+    const found = await Basket.findOne({ _id: basketId, userId })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
     if (!found) throw new ApiError("Khong tim thay gio hang", 404);
     return found;
   };
 
   static getAllBasket = async (req) => {
     const { userId } = req.user;
-    const found = await Basket.find({ userId });
+    const found = await Basket.find({ userId })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
     return found;
   };
 
@@ -73,19 +87,17 @@ class BasketService {
           new: true,
           runValidators: true,
         }
-      );
-      if (!newIngredient)
-        throw new ApiError(
-          "Giỏ hàng không tồn tại hoặc bạn không có quyền truy cập.",
-          404
-        );
+      )
+        .select("-createdAt -updatedAt -__v")
+        .lean();
+      if (!newIngredient) throw new ApiError("Giỏ hàng không tồn tại", 404);
       return newIngredient;
     } catch (err) {
       switch (err.name) {
         case "ValidationError":
-          throw new ApiError("Dữ liệu không hợp lệ", 400);
+          throw new ApiError(err.message, 400);
         case "CastError":
-          throw new ApiError("Định dạng basketId không hợp lệ", 400);
+          throw new ApiError(err.message, 400);
         case "MongoError":
           throw new ApiError("Lỗi cơ sở dữ liệu", 500);
         default:
@@ -111,25 +123,36 @@ class BasketService {
       updateObject[`ingredients.$[elem${index}].status`] = ingredient.status;
     });
 
-    const updatedBasket = await Basket.findOneAndUpdate(
-      { _id: basketId, userId }, // Điều kiện tìm kiếm basket theo basketId và userId
-      {
-        $set: updateObject,
-      },
-      {
-        new: true,
-        arrayFilters: ingredients.map((ingredient, index) => ({
-          [`elem${index}._id`]: ingredient._id,
-        })), // Lọc phần tử cần cập nhật theo _id
-        runValidators: true, // Đảm bảo các validator của schema vẫn được kiểm tra
+    try {
+      const updatedBasket = await Basket.findOneAndUpdate(
+        { _id: basketId, userId }, // Điều kiện tìm kiếm basket theo basketId và userId
+        {
+          $set: updateObject,
+        },
+        {
+          new: true,
+          arrayFilters: ingredients.map((ingredient, index) => ({
+            [`elem${index}._id`]: ingredient._id,
+          })), // Lọc phần tử cần cập nhật theo _id
+          runValidators: true, // Đảm bảo các validator của schema vẫn được kiểm tra
+        }
+      )
+        .select("-createdAt -updatedAt -__v")
+        .lean();
+      if (!updatedBasket) throw new ApiError("Giỏ hàng không tồn tại", 404);
+      return updatedBasket;
+    } catch (err) {
+      switch (err.name) {
+        case "ValidationError":
+          throw new ApiError(err.message, 400);
+        case "CastError":
+          throw new ApiError(err.message, 400);
+        case "MongoError":
+          throw new ApiError("Lỗi cơ sở dữ liệu", 500);
+        default:
+          throw err;
       }
-    );
-    if (!updatedBasket)
-      throw new ApiError(
-        "Giỏ hàng không tồn tại hoặc bạn không có quyền cập nhật",
-        404
-      );
-    return updatedBasket;
+    }
   };
 
   static deleteIngredientsInBasket = async (req) => {
@@ -148,7 +171,7 @@ class BasketService {
       },
       { new: true, runValidators: true } // Trả về giỏ hàng đã cập nhật và kiểm tra các validator
     );
-
+    if (!updatedBasket) throw new ApiError("Giỏ hàng không tồn tại", 404);
     return updatedBasket;
   };
 }

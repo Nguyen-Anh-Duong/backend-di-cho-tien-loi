@@ -7,7 +7,7 @@ class BasketController {
   static createBasket = async (req, res, next) => {
     return new SuccessResponse({
       message: "Tao gio hang thanh cong",
-      statusCode: 201,
+      statusCode: 200,
       metadata: await BasketService.createBasket(req),
     }).send(res);
   };
@@ -30,7 +30,7 @@ class BasketController {
 
   static getBasketByBasketId = async (req, res, next) => {
     return new SuccessResponse({
-      message: "Ok",
+      message: "Lay gio hang thanh cong",
       statusCode: 200,
       metadata: await BasketService.getBasketByBasketId(req),
     }).send(res);
@@ -47,7 +47,7 @@ class BasketController {
   static createNewIngredients = async (req, res, next) => {
     return new SuccessResponse({
       message: "Them ingredient thanh cong",
-      statusCode: 201,
+      statusCode: 200,
       metadata: await BasketService.createNewIngredientsForBasket(req),
     }).send(res);
   };
