@@ -4,11 +4,9 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 const cors = require("cors");
-const swaggerUi = require("swagger-ui-express");
-const fs = require("fs");
-const YAML = require("yaml");
 const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
+const configSwagger = require("./swagger");
 const app = express();
 
 //init middleware
@@ -18,10 +16,8 @@ app.use(compression());
 app.use(express.json());
 app.use(cors());
 
-const file = fs.readFileSync("./swagger.yaml", "utf8");
-const swaggerDocument = YAML.parse(file);
-
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+//swagger
+configSwagger(app);
 
 //init db
 require("./dbs/dbs.connect");
