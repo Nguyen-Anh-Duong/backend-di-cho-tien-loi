@@ -45,7 +45,6 @@ const authentication = async (req, res, next) => {
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new ForbiddenError("Not found keyStore");
 
-    //check refreshToken
     if (req.headers[HEADER.REFRESHTOKEN]) {
       try {
         const refreshToken = req.headers[HEADER.REFRESHTOKEN];
