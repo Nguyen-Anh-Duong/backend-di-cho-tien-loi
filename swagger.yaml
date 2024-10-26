@@ -116,7 +116,10 @@ paths:
                     type: array
                     items:
                       $ref: "#/components/schemas/Basket"
-
+        "403":
+          description: unauthorize
+        "500":
+          description: "Server error"
   /baskets/{basketId}:
     patch:
       tags:
