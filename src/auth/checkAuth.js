@@ -1,5 +1,9 @@
 "use strict";
-const { BadRequestError, NotFoundError, ForbiddenError } = require("../core/error.response");
+const {
+  BadRequestError,
+  NotFoundError,
+  ForbiddenError,
+} = require("../core/error.response");
 const apikeyModel = require("../models/apikey.model");
 const KeyTokenService = require("../services/keytoken.service");
 const JWT = require("jsonwebtoken");
@@ -13,6 +17,7 @@ const HEADER = {
 const apiKey = async (req, res, next) => {
   try {
     const key = req.headers[HEADER.API_KEY]?.toString();
+    console.log(key);
     if (!key) {
       return res.status(403).json({
         message: "Forbidden Error 1",
@@ -21,6 +26,7 @@ const apiKey = async (req, res, next) => {
 
     //check in db
     const objKey = await apikeyModel.findOne({ key: key }).lean();
+
     if (!objKey) {
       return res.status(403).json({
         message: "Forbidden Error 2",
@@ -39,7 +45,6 @@ const authentication = async (req, res, next) => {
     const keyStore = await KeyTokenService.findByUserId(userId);
     if (!keyStore) throw new ForbiddenError("Not found keyStore");
 
-    //check refreshToken
     if (req.headers[HEADER.REFRESHTOKEN]) {
       try {
         const refreshToken = req.headers[HEADER.REFRESHTOKEN];

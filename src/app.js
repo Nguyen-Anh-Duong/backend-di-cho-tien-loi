@@ -3,7 +3,10 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
+const cors = require("cors");
+const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
+const configSwagger = require("./swagger");
 const app = express();
 
 //init middleware
@@ -11,6 +14,10 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
+app.use(cors());
+
+//swagger
+configSwagger(app);
 
 //init db
 require("./dbs/dbs.connect");
@@ -20,7 +27,7 @@ app.use("/", require("./routes"));
 //handle error
 
 app.use((req, res, next) => {
-  const error = new Error("Not found");
+  const error = new Error("This route is not exist!!");
   error.status = 404;
   next(error);
 });
