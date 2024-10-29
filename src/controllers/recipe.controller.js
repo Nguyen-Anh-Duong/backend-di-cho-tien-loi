@@ -55,6 +55,12 @@ class RecipeController {
       metadata: await RecipeService.getRecipeById(recipeId),
     }).send(res);
   };
+  getRecipeByUserId = async (req, res, next) => {
+    const userId = req.params.userId;
+    return new SuccessResponse({
+      metadata: await RecipeService.getRecipeByUserId(userId),
+    }).send(res);
+  };
 }
 
 module.exports = new RecipeController();

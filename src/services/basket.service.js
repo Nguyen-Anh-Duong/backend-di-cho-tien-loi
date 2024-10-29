@@ -86,6 +86,7 @@ class BasketService {
         {
           new: true,
           runValidators: true,
+          upsert: true,
         }
       )
         .select("-createdAt -updatedAt -__v")
