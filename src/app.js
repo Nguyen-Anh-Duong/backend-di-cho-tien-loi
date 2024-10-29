@@ -3,6 +3,7 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
+const cors = require("cors");
 const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
 const swagger = require("./swagger");
@@ -13,10 +14,10 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
-
+app.use(cors());
 //swagger
 swagger(app);
- 
+
 //init db
 require("./dbs/dbs.connect");
 //init route
