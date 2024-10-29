@@ -3,10 +3,9 @@ const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
-const cors = require("cors");
 const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
-const configSwagger = require("./swagger");
+const swagger = require("./swagger");
 const app = express();
 const { createUserAdmin } = require("./utils/createUserAdmin");
 
@@ -15,11 +14,10 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
-app.use(cors());
 
 //swagger
-configSwagger(app);
-
+swagger(app);
+ 
 //init db
 require("./dbs/dbs.connect");
 //  createUserAdmin();
