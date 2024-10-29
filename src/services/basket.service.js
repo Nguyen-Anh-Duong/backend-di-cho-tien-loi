@@ -14,7 +14,7 @@ class BasketService {
     const response = newBasket.toObject();
     delete response.createdAt;
     delete response.updatedAt;
-
+    delete response.__v;
     return response;
   };
 

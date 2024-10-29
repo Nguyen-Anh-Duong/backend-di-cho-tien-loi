@@ -19,6 +19,7 @@ const {
   sendOTPResetPassword,
 } = require("./email.service");
 const roleSchema = require("../models/role.schema");
+const keytokenModel = require("../models/keytoken.model");
 class AccessService {
   static async verifyOTPAndSignUp({ email, password, name, otp }) {
     const isOTPValid = await OTPService.verifyOTP(email, otp);
@@ -155,7 +156,9 @@ class AccessService {
     return { message: "OTP sent to email for verification", otp };
   }
   static async refreshToken({ refreshToken }) {
-    const keyStore = await KeyTokenService.findByRefreshToken(refreshToken);
+    const keyStore = await keytokenModel.findOne({
+      refreshToken: refreshToken,
+    });
     if (!keyStore) throw new NotFoundError("Not found keyStore");
 
     //check refreshToken het han hay chua
