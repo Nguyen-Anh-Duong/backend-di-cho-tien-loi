@@ -19,6 +19,7 @@ const {
   sendOTPResetPassword,
 } = require("./email.service");
 const roleSchema = require("../models/role.schema");
+const keytokenModel = require("../models/keytoken.model");
 class AccessService {
   static async verifyOTPAndSignUp({ email, password, name, otp }) {
     const isOTPValid = await OTPService.verifyOTP(email, otp);
@@ -66,6 +67,7 @@ class AccessService {
         privateKey,
         publicKey,
       });
+      
 
       const payload = {
         userId: newUser._id,
@@ -78,6 +80,7 @@ class AccessService {
         publicKey: keyStore.publicKey,
       });
       if (!tokens) throw new BadRequestError("create token pair failed");
+      await keytokenModel.findOneAndUpdate({userId: newUser._id}, {refreshToken: tokens.refreshToken})
       return {
         user: getInfoData({
           object: newUser,
