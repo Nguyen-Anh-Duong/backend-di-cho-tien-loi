@@ -15,6 +15,7 @@ tags:
     description: Everything about basket
   - name: recipe
     description: Operations about recipe
+  - name: auth
 paths:
   /baskets:
     post:
@@ -590,7 +591,343 @@ paths:
         "500":
           description: "Server error"
 
-    
+  /recipe:
+    post:
+      tags:
+        - recipe
+      summary: create new recipe
+      description: Create new recipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipe_name:
+                  type: string
+                  description: "Name of the recipe"
+                  example: "Chicken Soup"
+                recipe_description:
+                  type: string
+                  description: "Description of the recipe"
+                  example: "A simple chicken soup recipe"
+                recipe_ingredients:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: "Name of the ingredient"
+                        example: "Chicken"
+                      measure:
+                        type: string
+                        description: "Measure or quantity of the ingredient"
+                        example: "1 kg"
+                recipe_cook_time:
+                  type: string
+                  description: "Time required to cook the recipe"
+                  example: "45 minutes"
+                recipe_youtube_url:
+                  type: string
+                  description: "URL to the recipe's YouTube video"
+                  example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+                recipe_category:
+                  type: string
+                  description: "Category of the recipe"
+                  example: "Soup"
+                recipe_image:
+                  type: string
+                  description: "URL to the image of the recipe"
+                  example: "https://www.example.com/images/chicken-soup.jpg"
+                is_published:
+                  type: boolean
+                  description: "Indicates if the recipe is published"
+                  example: false
+                is_draft:
+                  type: boolean
+                  description: "Indicates if the recipe is in draft mode"
+                  example: true
+                recipe_id_crawl:
+                  type: string
+                  description: "Unique identifier for the crawled recipe"
+                  example: "recipe12345"
+              required:
+                - recipe_name
+                - recipe_id_crawl
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    $ref: "#/components/schemas/recipe"
+
+        "403":
+          description: unauthorize
+        "500":
+          description: "Server error"
+
+  /pre_signup:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: duong111hgg@gmail.com
+                password:
+                  type: string
+                  example: 123456
+                name:
+                  type: string
+                  example: duong
+              required:
+                - email
+                - password
+                - name
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: create user success!!
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: OTP sent to email for verification
+                      otp:
+                        type: string
+                        example: 384737
+        "400":
+          description: User already exists
+        "500":
+          description: "Server error"
+  /verify_otp_and_signup:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "duong111hgg@gmail.com"
+                password:
+                  type: string
+                  example: "123456"
+                name:
+                  type: string
+                  example: "duong"
+                otp:
+                  type: string
+                  example: "772960"
+              required:
+                - email
+                - password
+                - name
+                - otp
+      responses:
+        "200":
+          description: Verify OTP and SignUp successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "verify OTP and signUp success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          user_email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                          user_name:
+                            type: string
+                            example: "duong"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsInJvbGVJZCI6IjY3MDQ5MDRjMTNmNzRjMzZlNjhjOGI4MiIsImlhdCI6MTczMDE2MTQwOCwiZXhwIjoxNzMwMzM0MjA4fQ.Yznr6GLeB18y8Cy4dJCDbx69rAX-OX78YXyLZeCCFLCELoMT9TJyiBKqt7zXbTqI086YcK2_s2Qut9d77ZfEVW4B9u1DXh5pW1tVyKwpiwzVS_OktcRNEcAMocq8zWj5s5K5PztW9vb2-axYR-oxDGg7hjoem0Fn3xNlRRx-a_RBQ_Be3YqyGIhlAJsGjlKnNoIrGjn99WjbrVV7HLTs9LZZUSUk8HqeaWpAaN1N6Me2MD402ermLXylIf8Yq-YbO1nYRyRE7pLCRxh7u-htrp6XCycaTeKKdHzkVV9C2OrhFU3LTkLu2xGhfau23MfudOxLpEEcpPFO5s92ifFckQ"
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsInJvbGVJZCI6IjY3MDQ5MDRjMTNmNzRjMzZlNjhjOGI4MiIsImlhdCI6MTczMDE2MTQwOCwiZXhwIjoxNzM1MzQ1NDA4fQ.HcgT5AVZPlnQVlV2X8-yLEp6hN-ppfWoi_9S_Ha88ymY3YZcMZBRz6bd9UgzfwBn8ZYoxhcW5rWz8Qgiv0R06sF3cT-mEaygRLP-OblJObWdHCQD_J8AhJ4yC_j4WhTym42IYKlCw0R7z9w_wOHG1nvejCwOjhxcIeJ0fP4n-8v6HJicLM_lXzbzMicjDbI3Qiezbs5iIJl5mtjzV8WJFs_QCMoaYwtamPqa33fvmWADaenI_iLHE7u7P5XGdVO_YUHh2kV71MZOjiVHJCOYAI3hmo5djwktYX__1n26kYm2m2_FBoZFPimZXRRxZWr2u9_X9rIpBfSZw5NZE81q-g"
+
+        "400":
+          description: Invalid token / Da ton tai user
+        "500":
+          description: "Server error"
+
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Sign in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "duong111hgg@gmail.com"
+                password:
+                  type: string
+                  example: "123456"
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: SignIn successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "signIn user success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          user_email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                          user_name:
+                            type: string
+                            example: "duong"
+                          user_role_system:
+                            type: string
+                            example: "6704904c13f74c36e68c8b82"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+        "400":
+          description: Invalid password
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+
+  /refresh_token:
+    post:
+      tags:
+        - auth
+      security:
+        - ClientAuth: []
+          RefreshTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsImlhdCI6MTczMDE2MzkxOCwiZXhwIjoxNzM1MzQ3OTE4fQ.bG-ZUecaESA1KTWgdIHaS7TcNMSDzTv9Ub6PZ8_lkhzS6Cjr-zH5p3LYw5xFnZvaqvFtEPanlPiHx7KppVylw57OXoiDeUVhPGBVmumuuxMfVsc4yhdCgsHiBnLzAnF5_xSvP4vC47dPKMnJjWCb45wDeP1ZjShyKq4nUNItM9sZnfqR-Zb3-Yqfpt85-bfwAZQ6RHxM6_8CVPzsxDhGgFMfAtYvgNqnyJ9x-iUYgStRwhwrvXZ42pDCU5HFBlzmyY6vgKi_aGNe7_ODbJZoMVa5DfrVpeQtIrpeBj5RO4DfuUqERHmpSqBw0l4wrr9HF9s4WNjPWI4D6nIr0oZQ3Q"
+
+      responses:
+        "200":
+          description: Refresh token successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "refresh token success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          userId:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+
 components:
   schemas:
     Basket:
@@ -647,6 +984,62 @@ components:
           format: mongoId
           description: id of ingredient
           example: 67184d96fd64d42e3ca7b112
+
+    recipe:
+      type: object
+      properties:
+        recipe_name:
+          type: string
+          description: "Name of the recipe"
+          example: "Chicken Soup"
+        recipe_description:
+          type: string
+          description: "Description of the recipe"
+          example: "A simple chicken soup recipe"
+        recipe_ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                description: "Name of the ingredient"
+                example: "Chicken"
+              measure:
+                type: string
+                description: "Measure or quantity of the ingredient"
+                example: "1 kg"
+        recipe_cook_time:
+          type: string
+          description: "Time required to cook the recipe"
+          example: "45 minutes"
+        recipe_youtube_url:
+          type: string
+          description: "URL to the recipe's YouTube video"
+          example: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+        recipe_category:
+          type: string
+          description: "Category of the recipe"
+          example: "Soup"
+        recipe_image:
+          type: string
+          description: "URL to the image of the recipe"
+          example: "https://www.example.com/images/chicken-soup.jpg"
+        is_published:
+          type: boolean
+          description: "Indicates if the recipe is published"
+          example: false
+        is_draft:
+          type: boolean
+          description: "Indicates if the recipe is in draft mode"
+          example: true
+        recipe_id_crawl:
+          type: string
+          description: "Unique identifier for the crawled recipe"
+          example: "recipe12345"
+      required:
+        - recipe_name
+        - recipe_id_crawl
 
   securitySchemes:
     RefreshTokenAuth:

@@ -19,6 +19,7 @@ class RecipeService {
       recipe_description,
       recipe_cook_time,
       recipe_youtube_url,
+      recipe_rating,
       recipe_category,
       recipe_image,
       is_published,
@@ -32,6 +33,7 @@ class RecipeService {
       recipe_description,
       recipe_cook_time,
       recipe_youtube_url,
+      recipe_rating,
       recipe_category,
       recipe_image,
       is_published,
@@ -58,6 +60,7 @@ class RecipeService {
       recipe_description,
       recipe_cook_time,
       recipe_youtube_url,
+      recipe_rating,
       recipe_category,
       recipe_image,
       is_published,
@@ -74,6 +77,7 @@ class RecipeService {
           recipe_description,
           recipe_cook_time,
           recipe_youtube_url,
+          recipe_rating,
           recipe_category,
           recipe_image,
           is_published,
@@ -88,17 +92,53 @@ class RecipeService {
       .lean();
 
     if (!updateRecipe) {
-      throw new NotFoundError("Recipe not found", 404);
+      throw new ApiError("Recipe not found", 404);
     }
     return updateRecipe;
   }
 
-  static async deleteRecipe(recipeId) {
-    const deleteRecipe = await recipeModel.findByIdAndDelete(recipeId);
+  static async deleteRecipe(req) {
+    const { userId } = req.user;
+    const recipeId = req.params.recipeId;
+    const deleteRecipe = await Recipe.findOneAndDelete({
+      _id: recipeId,
+      userId,
+    })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
     if (!deleteRecipe) {
-      throw new NotFoundError("Recipe not found", 404);
+      throw new ApiError("Recipe not found", 404);
     }
-    return deleteRecipe;
+    // return deleteRecipe;
+    return "xoa thanh cong";
+  }
+
+  static async addNewIngredients(req) {
+    const { userId } = req.user;
+    const { recipeId, ingredients } = req.body;
+    const recipe = await Recipe.findOneAndUpdate(
+      { _id: recipeId, userId },
+      {
+        $push: {
+          recipe_ingredients: ingredients,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+    if (!recipe) throw new ApiError("Recipe not found", 404);
+    return recipe;
+  }
+
+
+  static async updateIngredients(req){
+    const { userId } = req.user;
+    const { recipeId, ingredients } = req.body;
+    con
   }
 }
 
