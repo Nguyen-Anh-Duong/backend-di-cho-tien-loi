@@ -14,7 +14,6 @@ const recipeSchema = new Schema(
     recipe_ingredients: [
       {
         name: { type: String, required: true },
-        measure: { type: String, default: "" },
         quantity: { type: String, default: "" },
         unit: { type: String, default: "" },
       },

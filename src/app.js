@@ -8,6 +8,7 @@ const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
 const swagger = require("./swagger");
 const app = express();
+const { createUserAdmin } = require("./utils/createUserAdmin");
 
 //init middleware
 app.use(morgan("dev"));
@@ -15,11 +16,12 @@ app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(cors());
-//swagger
+//swagger 
 swagger(app);
 
 //init db
 require("./dbs/dbs.connect");
+//  createUserAdmin();
 //init route
 app.use("/", require("./routes"));
 
