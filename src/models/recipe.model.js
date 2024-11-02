@@ -15,6 +15,7 @@ const recipeSchema = new Schema(
       {
         name: { type: String, required: true },
         quantity: { type: String, default: "" },
+        category: { type: String, default: "" },
         unit: { type: String, default: "" },
       },
     ],
@@ -23,7 +24,7 @@ const recipeSchema = new Schema(
       type: String,
       default: "",
     },
-    recipe_rating: {type: Number, default: 4.5},
+    recipe_rating: { type: Number, default: 4.5 },
     recipe_category: { type: String, default: "" },
     recipe_image: { type: String, default: "" },
     is_published: { type: Boolean, default: false },

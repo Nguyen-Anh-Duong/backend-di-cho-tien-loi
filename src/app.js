@@ -15,8 +15,9 @@ app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
-app.use(cors());
-//swagger 
+//app.use(cors());
+
+//swagger
 swagger(app);
 
 //init db
@@ -38,8 +39,8 @@ app.use((error, req, res, next) => {
   return res.status(statusCode).json({
     status: "error",
     code: statusCode,
-    stack: error.stack,
     message: error.message || "Server Error!!",
+    stack: error.stack,
   });
 });
 

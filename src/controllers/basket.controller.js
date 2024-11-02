@@ -36,35 +36,35 @@ class BasketController {
     }).send(res);
   };
 
-  static getAllBasket = async (req, res, next) => {
+  static getPersonalBaskets = async (req, res, next) => {
     return new SuccessResponse({
       message: "Ok",
       statusCode: 200,
-      metadata: await BasketService.getAllBasket(req),
+      metadata: await BasketService.getPersonalBaskets(req),
     }).send(res);
   };
 
-  static createNewIngredients = async (req, res, next) => {
+  static addIngredients = async (req, res, next) => {
     return new SuccessResponse({
       message: "Them ingredient thanh cong",
       statusCode: 200,
-      metadata: await BasketService.createNewIngredientsForBasket(req),
+      metadata: await BasketService.addIngredients(req),
     }).send(res);
   };
 
-  static updateIngredientsInBasket = async (req, res, next) => {
+  static updateIngredients = async (req, res, next) => {
     return new SuccessResponse({
       message: "Cap nhat ingredient cho gio hang thanh cong",
       statusCode: 200,
-      metadata: await BasketService.updateIngredientsInBasket(req),
+      metadata: await BasketService.updateIngredients(req),
     }).send(res);
   };
 
-  static deleteIngredientsInBasket = async (req, res, next) => {
+  static deleteIngredients = async (req, res, next) => {
     return new SuccessResponse({
       message: "Xoa ingredients thanh cong",
       statusCode: 200,
-      metadata: await BasketService.deleteIngredientsInBasket(req),
+      metadata: await BasketService.deleteIngredients(req),
     }).send(res);
   };
 }
