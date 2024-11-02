@@ -6,9 +6,9 @@ const { update } = require("lodash");
 
 class BasketService {
   static createBasket = async (req) => {
-    const { name, description } = req.body;
+    const { name, description, ingredients } = req.body;
     const { userId } = req.user;
-    const newBasket = new Basket({ userId, name, description });
+    const newBasket = new Basket({ userId, name, description, ingredients });
     await newBasket.save();
 
     const response = newBasket.toObject();
@@ -61,7 +61,7 @@ class BasketService {
     return found;
   };
 
-  static getAllBasket = async (req) => {
+  static getPersonalBaskets = async (req) => {
     const { userId } = req.user;
     const found = await Basket.find({ userId })
       .select("-createdAt -updatedAt -__v")
@@ -69,7 +69,7 @@ class BasketService {
     return found;
   };
 
-  static createNewIngredientsForBasket = async (req) => {
+  static addIngredients = async (req) => {
     const { userId } = req.user;
     const { basketId, ingredients } = req.body;
     try {
@@ -106,13 +106,12 @@ class BasketService {
     }
   };
 
-  static updateIngredientsInBasket = async (req) => {
+  static updateIngredients = async (req) => {
     const { userId } = req.user;
     const { basketId, ingredients } = req.body;
 
     const updateObject = {};
 
-    // Tạo đối tượng cập nhật cho từng thành phần
     ingredients.forEach((ingredient, index) => {
       updateObject[`ingredients.$[elem${index}].name`] = ingredient.name;
       updateObject[`ingredients.$[elem${index}].quantity`] =
@@ -125,7 +124,7 @@ class BasketService {
 
     try {
       const updatedBasket = await Basket.findOneAndUpdate(
-        { _id: basketId, userId }, // Điều kiện tìm kiếm basket theo basketId và userId
+        { _id: basketId, userId },
         {
           $set: updateObject,
         },
@@ -133,8 +132,8 @@ class BasketService {
           new: true,
           arrayFilters: ingredients.map((ingredient, index) => ({
             [`elem${index}._id`]: ingredient._id,
-          })), // Lọc phần tử cần cập nhật theo _id
-          runValidators: true, // Đảm bảo các validator của schema vẫn được kiểm tra
+          })),
+          runValidators: true,
         }
       )
         .select("-createdAt -updatedAt -__v")
@@ -155,22 +154,23 @@ class BasketService {
     }
   };
 
-  static deleteIngredientsInBasket = async (req) => {
+  static deleteIngredients = async (req) => {
     const { userId } = req.user;
-    const { basketId, ingredientIds } = req.body;
+    const { basketId, ingredients } = req.body;
 
     const updatedBasket = await Basket.findOneAndUpdate(
-      { _id: basketId, userId }, // Điều kiện tìm kiếm
+      { _id: basketId, userId },
       {
         $pull: {
-          // Sử dụng $pull để xóa các ingredients
           ingredients: {
-            _id: { $in: ingredientIds }, // Xóa các ingredient có _id trong danh sách
+            _id: { $in: ingredients },
           },
         },
       },
-      { new: true, runValidators: true } // Trả về giỏ hàng đã cập nhật và kiểm tra các validator
-    );
+      { new: true, runValidators: true }
+    )
+      .select("-createdAt -updatedAt -__v")
+      .lean();
     if (!updatedBasket) throw new ApiError("Giỏ hàng không tồn tại", 404);
     return updatedBasket;
   };

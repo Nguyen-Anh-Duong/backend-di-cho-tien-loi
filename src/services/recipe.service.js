@@ -5,8 +5,12 @@ const Recipe = require("../models/recipe.model");
 const User = require("../models/user.model");
 
 class RecipeService {
-  static async getAllRecipe() {
-    return await recipeModel.find();
+  static async getPersonalRecipes(req) {
+    const { userId } = req.user;
+    const recipes = await Recipe.find({ userId })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+    return recipes;
   }
   static async getRecipeById(recipeId) {
     return await recipeModel.findById(recipeId);
@@ -91,9 +95,7 @@ class RecipeService {
       .select("-createdAt -updatedAt -__v")
       .lean();
 
-    if (!updateRecipe) {
-      throw new ApiError("Recipe not found", 404);
-    }
+    if (!updateRecipe) throw new ApiError("Không tìm thấy công thức", 404);
     return updateRecipe;
   }
 
@@ -107,7 +109,7 @@ class RecipeService {
       .select("-createdAt -updatedAt -__v")
       .lean();
     if (!deleteRecipe) {
-      throw new ApiError("Recipe not found", 404);
+      if (!recipe) throw new ApiError("Không tìm thấy công thức", 404);
     }
     // return deleteRecipe;
     return "xoa thanh cong";
@@ -130,15 +132,87 @@ class RecipeService {
     )
       .select("-createdAt -updatedAt -__v")
       .lean();
-    if (!recipe) throw new ApiError("Recipe not found", 404);
+    if (!recipe) throw new ApiError("Không tìm thấy công thức", 404);
     return recipe;
   }
 
-
-  static async updateIngredients(req){
+  static async updateIngredients(req) {
     const { userId } = req.user;
     const { recipeId, ingredients } = req.body;
-    con
+
+    const updateObject = {};
+
+    // Tạo đối tượng cập nhật cho từng thành phần
+    ingredients.forEach((ingredient, index) => {
+      updateObject[`recipe_ingredients.$[elem${index}].name`] = ingredient.name;
+      updateObject[`recipe_ingredients.$[elem${index}].quantity`] =
+        ingredient.quantity;
+      updateObject[`recipe_ingredients.$[elem${index}].unit`] = ingredient.unit;
+      updateObject[`recipe_ingredients.$[elem${index}].category`] =
+        ingredient.category;
+      //updateObject[`recipe_ingredients.$[elem${index}]._id`] = ingredient._id;
+    });
+
+    try {
+      const recipe = await Recipe.findOneAndUpdate(
+        {
+          _id: recipeId,
+          userId,
+        },
+        {
+          $set: updateObject,
+        },
+        {
+          new: true,
+          runValidators: true,
+          arrayFilters: ingredients.map((ingredient, index) => ({
+            [`elem${index}._id`]: ingredient._id,
+          })),
+        }
+      )
+        .select("-createdAt -updatedAt -__v")
+        .lean();
+
+      if (!recipe) throw new ApiError("Không tìm thấy công thức", 404);
+      return recipe;
+    } catch (err) {
+      switch (err.name) {
+        case "ValidationError":
+          throw new ApiError(err.message, 400);
+        case "CastError":
+          throw new ApiError(err.message, 400);
+        case "MongoError":
+          throw new ApiError("Lỗi cơ sở dữ liệu", 500);
+        default:
+          throw err;
+      }
+    }
+  }
+
+  static async deleteIngredient(req) {
+    const { userId } = req.user;
+    const { recipeId, ingredients } = req.body;
+    const recipe = await Recipe.findOneAndUpdate(
+      {
+        _id: recipeId,
+        userId,
+      },
+      {
+        $pull: {
+          recipe_ingredients: {
+            _id: { $in: ingredients },
+          },
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+    if (!recipe) throw new ApiError("Không tìm thấy công thức", 404);
+    return recipe;
   }
 }
 

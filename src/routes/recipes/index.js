@@ -2,20 +2,21 @@
 
 const express = require("express");
 const { asyncHandler } = require("../../helpers/asyncHandler");
-const recipeController = require("../../controllers/recipe.controller");
+const RecipeController = require("../../controllers/recipe.controller");
 const { authentication } = require("../../auth/checkAuth");
 
 const router = express.Router();
 
 router.use(authentication);
 
-router.post("/ingredients", asyncHandler(recipeController.addNewIngredients));
+router.post("/ingredients", asyncHandler(RecipeController.addNewIngredients));
+router.patch("/ingredients", asyncHandler(RecipeController.updateIngredients));
+router.delete("/ingredients", asyncHandler(RecipeController.deleteIngredient));
 
-
-router.post("/", asyncHandler(recipeController.createRecipe));
-router.get("/", asyncHandler(recipeController.getAllRecipe));
-router.get("/:recipeId", asyncHandler(recipeController.getRecipeById));
-router.patch("/:recipeId", asyncHandler(recipeController.updateRecipe));
-router.delete("/:recipeId", asyncHandler(recipeController.deleteRecipe));
+router.post("/", asyncHandler(RecipeController.createRecipe));
+router.get("/", asyncHandler(RecipeController.getPersonalRecipes));
+//router.get("/:recipeId", asyncHandler(RecipeController.getRecipeById));
+router.patch("/:recipeId", asyncHandler(RecipeController.updateRecipe));
+router.delete("/:recipeId", asyncHandler(RecipeController.deleteRecipe));
 
 module.exports = router;

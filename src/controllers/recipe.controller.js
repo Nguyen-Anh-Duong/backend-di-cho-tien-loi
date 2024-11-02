@@ -33,13 +33,13 @@ class RecipeController {
       statusCode: 200,
       metadata: await RecipeService.addNewIngredients(req),
     }).send(res);
-  }
+  };
 
-  getAllRecipe = async (req, res, next) => {
+  getPersonalRecipes = async (req, res, next) => {
     return new SuccessResponse({
       message: "ok",
       statusCode: 200,
-      metadata: await RecipeService.getAllRecipe(),
+      metadata: await RecipeService.getPersonalRecipes(req),
     }).send(res);
   };
   getRecipeByRecipeId = async (req, res, next) => {
@@ -53,6 +53,22 @@ class RecipeController {
     const userId = req.params.userId;
     return new SuccessResponse({
       metadata: await RecipeService.getRecipeByUserId(userId),
+    }).send(res);
+  };
+
+  updateIngredients = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "ok",
+      statusCode: 200,
+      metadata: await RecipeService.updateIngredients(req),
+    }).send(res);
+  };
+
+  deleteIngredient = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "ok",
+      statusCode: 200,
+      metadata: await RecipeService.deleteIngredient(req),
     }).send(res);
   };
 }
