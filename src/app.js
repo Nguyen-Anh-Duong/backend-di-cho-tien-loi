@@ -17,6 +17,10 @@ require("./dbs/dbs.connect");
 //init route
 app.use("/", require("./routes"));
 
+app.get("/", (req, res, next) => {
+  res.send("Hello");
+});
+
 //handle error
 
 app.use((req, res, next) => {
