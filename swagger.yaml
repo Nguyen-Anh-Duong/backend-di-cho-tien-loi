@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Di cho tien loi hehehe
+  title: Bendi
   description: |-
     Api cho ung dung di cho tien loi
 
@@ -1252,10 +1252,7 @@ paths:
                     description: id of ingredient
                     example: 671c6bf12d01f20adb69a778
                   example:
-                    [
-                      "671c6bf12d01f20adb69a778",
-                      "671c6c1eef705c133aef6763"
-                    ]
+                    ["671c6bf12d01f20adb69a778", "671c6c1eef705c133aef6763"]
               required:
                 - recipeId
                 - ingredients
@@ -1283,7 +1280,7 @@ paths:
           description: Khong tim thay gio hang
         "500":
           description: "Server error"
-      
+
 components:
   schemas:
     Basket:
@@ -1407,7 +1404,6 @@ components:
       required:
         - recipe_name
 
-
     RecipeResponse:
       type: object
       properties:
@@ -1435,7 +1431,7 @@ components:
             recipe_ingredients:
               type: array
               items:
-                $ref: '#/components/schemas/RecipeIngredientResponse'
+                $ref: "#/components/schemas/RecipeIngredientResponse"
             recipe_cook_time:
               type: string
               example: ""
