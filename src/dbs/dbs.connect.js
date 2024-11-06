@@ -4,7 +4,7 @@ const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 
 const connectString =
-  process.env.ENViRONMENT == "dev"
+  process.env.ENViRONMENT === "dev"
     ? process.env.DB_URL_TEST
     : process.env.DB_URL;
 
