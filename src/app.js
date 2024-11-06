@@ -4,11 +4,13 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 const cors = require("cors");
+const path = require("path");
 const { NotFoundError } = require("./core/error.response");
 require("dotenv").config();
 const swagger = require("./swagger");
 const app = express();
 const { createUserAdmin } = require("./utils/createUserAdmin");
+const { WELCOME_HTML } = require("./templates/index");
 
 //init middleware
 app.use(morgan("dev"));
@@ -16,8 +18,6 @@ app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(cors());
-
-app.use(express.static(__dirname + "/public"));
 
 //swagger
 swagger(app);
@@ -28,6 +28,11 @@ require("./dbs/dbs.connect");
 //init route
 app.use("/", require("./routes"));
 
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res, next) => {
+  res.send(WELCOME_HTML);
+});
 //handle error
 
 app.use((req, res, next) => {
