@@ -94,7 +94,7 @@ const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </html>
 `;
 
-const WELCOME_TEMPLATE = `
+const WELCOME_PAGE = `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -130,10 +130,90 @@ const WELCOME_TEMPLATE = `
 </html>
 `;
 
-module.exports = {
-    VERIFICATION_EMAIL_TEMPLATE,
-    PASSWORD_RESET_SUCCESS_TEMPLATE,
-    PASSWORD_RESET_REQUEST_TEMPLATE,
-    WELCOME_TEMPLATE
-}
+const WELCOME_HTML = `
+    <html>
+      <head>
+        <title>Welcome Page</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6e7dff, #9d94ff);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+          }
+          h1 {
+            font-size: 3rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+          }
+          p {
+            font-size: 1.2rem;
+            color: #ffffff;
+            margin-bottom: 30px;
+          }
+          .container {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+          }
+          .button {
+            padding: 12px 24px;
+            background-color: #ff7b72;
+            color: white;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          }
+          .button:hover {
+            background-color: #ff4e3b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+          }
+          .count {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            color: #ffedb6;
+          }
+          .count span {
+            font-weight: bold;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Welcome to Benri!</h1>
+          <p>This is a simple HTML page served from Express.</p>
+          <button class="button" id="incrementBtn">Click Me!</button>
+          <div class="count">
+            Click count: <span id="countValue">0</span>
+          </div>
+        </div>
 
+        <script src="/script.js"></script>
+      </body>
+    </html>
+`;
+
+module.exports = {
+  VERIFICATION_EMAIL_TEMPLATE,
+  PASSWORD_RESET_SUCCESS_TEMPLATE,
+  PASSWORD_RESET_REQUEST_TEMPLATE,
+  WELCOME_PAGE,
+  WELCOME_HTML,
+};
