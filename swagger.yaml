@@ -1,8 +1,8 @@
 openapi: 3.0.3
 info:
-  title: Bendi
+  title: Benri
   description: |-
-    Api cho ung dung di cho tien loi
+    Api cho ung dung di cho tien loi - Benri
 
   contact:
     email: nguyenanhduong112004@gmail.com
