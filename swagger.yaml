@@ -10,6 +10,7 @@ info:
 servers:
   - url: http://localhost:3056/v1/api
   - url: http://54.251.104.133/v1/api
+  - url: https://benri-three.vercel.app/v1/api/
 tags:
   - name: auth
   - name: basket

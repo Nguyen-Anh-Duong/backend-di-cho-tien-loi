@@ -12,10 +12,12 @@ const { createUserAdmin } = require("./utils/createUserAdmin");
 
 //init middleware
 app.use(morgan("dev"));
-app.use(helmet());
+//app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(cors());
+
+app.use(express.static(__dirname + "/public"));
 
 //swagger
 swagger(app);
