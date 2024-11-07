@@ -29,13 +29,12 @@ class AccessService {
     if (foundUser) throw new BadRequestError("Da ton tai user");
     await ApiKeyService.createApiKey();
     const defaultRole = await roleSchema.findOne({ rol_name: "user" }).lean();
-    // if (!defaultRole) {
-    //   const newRole = await roleSchema.create({
-    //     rol_name: "user" /*, other fields */,
-    //     rol_slug: "hhehe",
-    //   });
-    //   console.log("Default 'user' role created:", newRole);
-    // }
+    if (!defaultRole) {
+      const newRole = await roleSchema.create({
+        rol_name: "user" /*, other fields */,
+        rol_slug: "hhehe",
+      });
+    }
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = await userModel.create({
       user_email: email,
@@ -67,7 +66,6 @@ class AccessService {
         privateKey,
         publicKey,
       });
-      
 
       const payload = {
         userId: newUser._id,
@@ -80,7 +78,10 @@ class AccessService {
         publicKey: keyStore.publicKey,
       });
       if (!tokens) throw new BadRequestError("create token pair failed");
-      await keytokenModel.findOneAndUpdate({userId: newUser._id}, {refreshToken: tokens.refreshToken})
+      await keytokenModel.findOneAndUpdate(
+        { userId: newUser._id },
+        { refreshToken: tokens.refreshToken }
+      );
       return {
         user: getInfoData({
           object: newUser,
@@ -131,7 +132,6 @@ class AccessService {
   }
 
   static async logOut(keyStore) {
-    console.log(`keyStore: ${keyStore}`);
     const delKey = await KeyTokenService.removeRefreshTokenById({
       id: keyStore._id,
       refreshToken: keyStore.refreshToken,
@@ -158,7 +158,9 @@ class AccessService {
     return { message: "OTP sent to email for verification", otp };
   }
   static async refreshToken({ refreshToken }) {
-    const keyStore = await KeyTokenService.findByRefreshToken(refreshToken);
+    const keyStore = await keytokenModel.findOne({
+      refreshToken: refreshToken,
+    });
     if (!keyStore) throw new NotFoundError("Not found keyStore");
 
     //check refreshToken het han hay chua
