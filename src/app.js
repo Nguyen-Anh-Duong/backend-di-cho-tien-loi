@@ -33,8 +33,17 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/", (req, res, next) => {
   res.send(WELCOME_HTML);
 });
-//handle error
 
+app.get("/cronjob", (req, res, next) => {
+  res.json(
+    "This data is generated for a scheduled task that runs every 12 minutes."
+  );
+});
+
+// if (process.env.ENViRONMENT === "prod")
+//    require("./scripts/cronjob");
+require("./scripts/cronjob");
+//handle error
 app.use((req, res, next) => {
   const error = new Error("This route is not exist!!");
   error.status = 404;
