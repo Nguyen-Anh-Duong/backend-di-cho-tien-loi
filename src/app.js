@@ -40,9 +40,8 @@ app.get("/cronjob", (req, res, next) => {
   );
 });
 
-// if (process.env.ENViRONMENT === "prod")
-//    require("./scripts/cronjob");
-require("./scripts/cronjob");
+if (process.env.ENViRONMENT === "prod") require("./scripts/cronjob");
+
 //handle error
 app.use((req, res, next) => {
   const error = new Error("This route is not exist!!");
