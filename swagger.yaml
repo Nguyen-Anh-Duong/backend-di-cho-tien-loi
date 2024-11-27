@@ -618,6 +618,8 @@ paths:
                         example: kg
                     required:
                       - name
+                      - quantity
+                      - unit
               required:
                 - basketId
                 - ingredients
