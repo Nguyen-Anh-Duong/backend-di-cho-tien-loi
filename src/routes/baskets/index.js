@@ -1,10 +1,8 @@
 "use strict";
 const express = require("express");
 const { asyncHandler } = require("../../helpers/asyncHandler");
-const User = require("../../models/user.model");
-const Basket = require("../../models/baskets.model");
-const BasketController = require("../../controllers/basket.controller");
 const { authentication } = require("../../auth/checkAuth");
+const BasketController = require("../../controllers/basket.controller");
 
 const router = express.Router();
 

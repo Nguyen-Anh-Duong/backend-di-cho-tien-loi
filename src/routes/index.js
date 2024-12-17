@@ -5,8 +5,6 @@ const { apiKey } = require("../auth/checkAuth");
 const { route } = require("./access");
 const router = express.Router();
 
-
-
 //check apikey
 // router.use(apiKey);
 
@@ -17,5 +15,6 @@ router.use("/v1/api", require("./access"));
 router.use("/v1/api/rbac", require("./rbac"));
 router.use("/v1/api/user", require("./user"));
 router.use("/v1/api/baskets", require("./baskets"));
+router.use("/v1/api/fridge", require("./fridges"));
 
 module.exports = router;
