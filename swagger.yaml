@@ -8,8 +8,6 @@ info:
     email: nguyenanhduong112004@gmail.com
   version: 1.0.0
 servers:
-  - url: http://localhost:3056/v1/api
-  - url: http://54.251.104.133/v1/api
   - url: https://bendi.onrender.com/v1/api/
 tags:
   - name: auth
