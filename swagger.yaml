@@ -304,6 +304,9 @@ paths:
                       unit:
                         type: string
                         example: kg
+                      category:
+                        type: string
+                        example: "meat"
                     required:
                       - name
               required:
@@ -359,6 +362,9 @@ paths:
                             unit:
                               type: string
                               example: kg
+                            category:
+                              type: string
+                              example: "meat"
 
         "403":
           description: forbidden
