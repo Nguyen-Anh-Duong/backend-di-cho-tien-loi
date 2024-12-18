@@ -28,12 +28,12 @@ class BasketService {
 
   static updateBasket = async (req) => {
     const basketId = req.params.basketId;
-    const { name, description, totalMoney } = req.body;
+    const { name, description, totalMoney, ingredients } = req.body;
     const { userId } = req.user;
 
     const updateBasket = await Basket.findOneAndUpdate(
       { _id: basketId, userId },
-      { name, description, totalMoney },
+      { name, description, totalMoney, ingredients },
       { new: true, runValidators: true }
     )
       .select("-createdAt -updatedAt -__v")
@@ -42,6 +42,11 @@ class BasketService {
     if (!updateBasket) throw new ApiError("Khong tim thay gio hang", 404);
     updateBasket.basketId = updateBasket._id;
     delete updateBasket._id;
+    const newIngredients = updateBasket.ingredients;
+    for (let ingredient of newIngredients) {
+      ingredient.ingredientId = ingredient._id;
+      delete ingredient._id;
+    }
 
     return updateBasket;
   };
@@ -89,7 +94,7 @@ class BasketService {
 
   static addIngredients = async (req) => {
     const { userId } = req.user;
-    const { basketId, newIngredients } = req.body;
+    const { basketId, ingredients } = req.body;
     try {
       const basket = await Basket.findOneAndUpdate(
         {
@@ -98,7 +103,7 @@ class BasketService {
         },
         {
           $push: {
-            ingredients: newIngredients,
+            ingredients,
           },
         },
         {
@@ -113,8 +118,8 @@ class BasketService {
       basket.basketId = basket._id;
       delete basket._id;
 
-      const { ingredients } = basket;
-      for (let ingredient of ingredients) {
+      const newIngredients = basket.ingredients;
+      for (let ingredient of newIngredients) {
         ingredient.ingredientId = ingredient._id;
         delete ingredient._id;
       }
@@ -158,7 +163,7 @@ class BasketService {
         {
           new: true,
           arrayFilters: ingredients.map((ingredient, index) => ({
-            [`elem${index}._id`]: ingredient._id,
+            [`elem${index}._id`]: ingredient.ingredientId,
           })),
           runValidators: true,
         }
@@ -166,6 +171,14 @@ class BasketService {
         .select("-createdAt -updatedAt -__v")
         .lean();
       if (!updatedBasket) throw new ApiError("Giỏ hàng không tồn tại", 404);
+      updatedBasket.basketId = updatedBasket._id;
+      delete updatedBasket._id;
+      const newIngredients = updatedBasket.ingredients;
+      for (let ingredient of newIngredients) {
+        ingredient.ingredientId = ingredient._id;
+        delete ingredient._id;
+      }
+
       return updatedBasket;
     } catch (err) {
       switch (err.name) {

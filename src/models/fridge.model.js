@@ -29,6 +29,7 @@ const fridgeSchema = Schema(
     },
     expiryDate: {
       type: Number,
+      default: -1,
     },
     addedDate: {
       type: Number,
@@ -40,6 +41,7 @@ const fridgeSchema = Schema(
     },
     consumedDate: {
       type: Number,
+      default: -1,
     },
     storageLocation: {
       type: String,

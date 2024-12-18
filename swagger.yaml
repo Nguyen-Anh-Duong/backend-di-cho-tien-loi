@@ -307,6 +307,9 @@ paths:
                         example: "meat"
                     required:
                       - name
+                totalMoney:
+                  type: number
+                  example: 200000
               required:
                 - name
         required: true
