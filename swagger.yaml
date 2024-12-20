@@ -8,8 +8,6 @@ info:
     email: nguyenanhduong112004@gmail.com
   version: 1.0.0
 servers:
-  - url: http://localhost:3056/v1/api
-  - url: http://54.251.104.133/v1/api
   - url: https://bendi.onrender.com/v1/api/
 tags:
   - name: auth
@@ -304,8 +302,14 @@ paths:
                       unit:
                         type: string
                         example: kg
+                      category:
+                        type: string
+                        example: "meat"
                     required:
                       - name
+                totalMoney:
+                  type: number
+                  example: 200000
               required:
                 - name
         required: true
@@ -359,6 +363,9 @@ paths:
                             unit:
                               type: string
                               example: kg
+                            category:
+                              type: string
+                              example: "meat"
 
         "403":
           description: forbidden
@@ -618,6 +625,8 @@ paths:
                         example: kg
                     required:
                       - name
+                      - quantity
+                      - unit
               required:
                 - basketId
                 - ingredients
