@@ -17,6 +17,7 @@ class AccessController {
     }).send(res);
   };
   logIn = async (req, res, next) => {
+    console.log(req.body)
     new SuccessResponse({
       message: "signIn user success!!",
       metadata: await AccessService.logIn(req.body),

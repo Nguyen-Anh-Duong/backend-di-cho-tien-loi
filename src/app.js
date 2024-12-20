@@ -8,12 +8,14 @@ require("dotenv").config();
 const swagger = require("./swagger");
 const app = express();
 const { createUserAdmin } = require("./utils/createUserAdmin");
+const cors = require('cors');
 
 //init middleware
 app.use(morgan("dev"));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
+app.use(cors())
 
 //swagger
 swagger(app);
