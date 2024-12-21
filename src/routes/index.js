@@ -16,5 +16,6 @@ router.use("/v1/api/rbac", require("./rbac"));
 router.use("/v1/api/user", require("./user"));
 router.use("/v1/api/baskets", require("./baskets"));
 router.use("/v1/api/fridge", require("./fridges"));
+router.use("/v1/api/family", require("./family"));
 
 module.exports = router;
