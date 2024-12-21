@@ -1,21 +1,268 @@
 openapi: 3.0.3
 info:
-  title: Di cho tien loi hehehe
+  title: Benri
   description: |-
-    Api cho ung dung di cho tien loi
+    Api cho ung dung di cho tien loi - Benri
 
   contact:
     email: nguyenanhduong112004@gmail.com
   version: 1.0.0
 servers:
-  - url: http://localhost:3056/v1/api
-  - url: http://54.251.104.133/v1/api
+  - url: https://bendi.onrender.com/v1/api/
 tags:
+  - name: auth
   - name: basket
     description: Everything about basket
   - name: recipe
     description: Operations about recipe
+
 paths:
+  /pre_signup:
+    post:
+      tags:
+        - auth
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: duong111hgg@gmail.com
+                password:
+                  type: string
+                  example: 123456
+                name:
+                  type: string
+                  example: duong
+              required:
+                - email
+                - password
+                - name
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: create user success!!
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      message:
+                        type: string
+                        example: OTP sent to email for verification
+                      otp:
+                        type: string
+                        example: 384737
+        "400":
+          description: User already exists
+        "500":
+          description: "Server error"
+  /verify_otp_and_signup:
+    post:
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "duong111hgg@gmail.com"
+                password:
+                  type: string
+                  example: "123456"
+                name:
+                  type: string
+                  example: "duong"
+                otp:
+                  type: string
+                  example: "772960"
+              required:
+                - email
+                - password
+                - name
+                - otp
+      responses:
+        "200":
+          description: Verify OTP and SignUp successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "verify OTP and signUp success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          user_email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                          user_name:
+                            type: string
+                            example: "duong"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsInJvbGVJZCI6IjY3MDQ5MDRjMTNmNzRjMzZlNjhjOGI4MiIsImlhdCI6MTczMDE2MTQwOCwiZXhwIjoxNzMwMzM0MjA4fQ.Yznr6GLeB18y8Cy4dJCDbx69rAX-OX78YXyLZeCCFLCELoMT9TJyiBKqt7zXbTqI086YcK2_s2Qut9d77ZfEVW4B9u1DXh5pW1tVyKwpiwzVS_OktcRNEcAMocq8zWj5s5K5PztW9vb2-axYR-oxDGg7hjoem0Fn3xNlRRx-a_RBQ_Be3YqyGIhlAJsGjlKnNoIrGjn99WjbrVV7HLTs9LZZUSUk8HqeaWpAaN1N6Me2MD402ermLXylIf8Yq-YbO1nYRyRE7pLCRxh7u-htrp6XCycaTeKKdHzkVV9C2OrhFU3LTkLu2xGhfau23MfudOxLpEEcpPFO5s92ifFckQ"
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsInJvbGVJZCI6IjY3MDQ5MDRjMTNmNzRjMzZlNjhjOGI4MiIsImlhdCI6MTczMDE2MTQwOCwiZXhwIjoxNzM1MzQ1NDA4fQ.HcgT5AVZPlnQVlV2X8-yLEp6hN-ppfWoi_9S_Ha88ymY3YZcMZBRz6bd9UgzfwBn8ZYoxhcW5rWz8Qgiv0R06sF3cT-mEaygRLP-OblJObWdHCQD_J8AhJ4yC_j4WhTym42IYKlCw0R7z9w_wOHG1nvejCwOjhxcIeJ0fP4n-8v6HJicLM_lXzbzMicjDbI3Qiezbs5iIJl5mtjzV8WJFs_QCMoaYwtamPqa33fvmWADaenI_iLHE7u7P5XGdVO_YUHh2kV71MZOjiVHJCOYAI3hmo5djwktYX__1n26kYm2m2_FBoZFPimZXRRxZWr2u9_X9rIpBfSZw5NZE81q-g"
+
+        "400":
+          description: Invalid token / Da ton tai user
+        "500":
+          description: "Server error"
+
+  /login:
+    post:
+      tags:
+        - auth
+      summary: Sign in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: "duong111hgg@gmail.com"
+                password:
+                  type: string
+                  example: "123456"
+              required:
+                - email
+                - password
+      responses:
+        "200":
+          description: SignIn successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "signIn user success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          user_email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                          user_name:
+                            type: string
+                            example: "duong"
+                          user_role_system:
+                            type: string
+                            example: "6704904c13f74c36e68c8b82"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+        "400":
+          description: Invalid password
+        "404":
+          description: User not found
+        "500":
+          description: Server error
+
+  /refresh_token:
+    post:
+      tags:
+        - auth
+      security:
+        - ClientAuth: []
+          RefreshTokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                refreshToken:
+                  type: string
+                  example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzIwMmFmZmNhNjA2YWQxYjNlZWMzMTMiLCJlbWFpbCI6ImR1b25nMTExaGdnQGdtYWlsLmNvbSIsImlhdCI6MTczMDE2MzkxOCwiZXhwIjoxNzM1MzQ3OTE4fQ.bG-ZUecaESA1KTWgdIHaS7TcNMSDzTv9Ub6PZ8_lkhzS6Cjr-zH5p3LYw5xFnZvaqvFtEPanlPiHx7KppVylw57OXoiDeUVhPGBVmumuuxMfVsc4yhdCgsHiBnLzAnF5_xSvP4vC47dPKMnJjWCb45wDeP1ZjShyKq4nUNItM9sZnfqR-Zb3-Yqfpt85-bfwAZQ6RHxM6_8CVPzsxDhGgFMfAtYvgNqnyJ9x-iUYgStRwhwrvXZ42pDCU5HFBlzmyY6vgKi_aGNe7_ODbJZoMVa5DfrVpeQtIrpeBj5RO4DfuUqERHmpSqBw0l4wrr9HF9s4WNjPWI4D6nIr0oZQ3Q"
+
+      responses:
+        "200":
+          description: Refresh token successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "refresh token success!!"
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: object
+                    properties:
+                      user:
+                        type: object
+                        properties:
+                          userId:
+                            type: string
+                            example: "67202affca606ad1b3eec313"
+                          email:
+                            type: string
+                            example: "duong111hgg@gmail.com"
+                      tokens:
+                        type: object
+                        properties:
+                          accessToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
+                          refreshToken:
+                            type: string
+                            example: "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW..."
   /baskets:
     post:
       tags:
@@ -40,6 +287,31 @@ paths:
                   type: string
                   description: description of this basket
                   example: buy at supermarket
+                ingredients:
+                  type: array
+                  description: array of ingredient
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: thit bo
+                      quantity:
+                        type: number
+                        example: 2
+                      unit:
+                        type: string
+                        example: kg
+                      category:
+                        type: string
+                        example: "meat"
+                    required:
+                      - name
+                totalMoney:
+                  type: number
+                  example: 200000
+              required:
+                - name
         required: true
       responses:
         "200":
@@ -81,19 +353,31 @@ paths:
                         description: ingredients of basket
                         items:
                           type: object
-                        example: []
+                          properties:
+                            name:
+                              type: string
+                              example: thit bo
+                            quantity:
+                              type: number
+                              example: 2
+                            unit:
+                              type: string
+                              example: kg
+                            category:
+                              type: string
+                              example: "meat"
 
         "403":
-          description: unauthorize
+          description: forbidden
         "500":
           description: "Server error"
 
     get:
       tags:
         - basket
-      summary: get all baskets
+      summary: get personal baskets
       description: get all basket of user
-      operationId: getAllBaskets
+      operationId: getPersonalBaskets
       security:
         - RefreshTokenAuth: []
           ClientAuth: []
@@ -117,7 +401,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/Basket"
         "403":
-          description: unauthorize
+          description: forbidden
         "500":
           description: "Server error"
   /baskets/{basketId}:
@@ -195,7 +479,7 @@ paths:
                         description: ingredients of basket
                         example: []
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
@@ -260,7 +544,7 @@ paths:
                           type: object
                         example: []
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
@@ -290,7 +574,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Basket"
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
@@ -300,8 +584,8 @@ paths:
     post:
       tags:
         - basket
-      summary: create new ingredient
-      description: create new ingredient for a basket
+      summary: add ingredient for basket
+      description: add new ingredient for a basket
       operationId: createIngredientForBasket
       security:
         - RefreshTokenAuth: []
@@ -319,7 +603,7 @@ paths:
                   example: 671822ae6024e6630bb87a1a
                 ingredients:
                   type: array
-                  description: list of ingredient want to create
+                  description: list of ingredient want to add for basket
                   items:
                     type: object
                     properties:
@@ -339,7 +623,13 @@ paths:
                         type: string
                         description: unit of ingredient
                         example: kg
-
+                    required:
+                      - name
+                      - quantity
+                      - unit
+              required:
+                - basketId
+                - ingredients
         required: true
       responses:
         "200":
@@ -395,7 +685,7 @@ paths:
         "400":
           description: bad request
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
@@ -403,7 +693,7 @@ paths:
     patch:
       tags:
         - basket
-      summary: update
+      summary: update ingredients in basket
       description: update ingredient in a basket
       operationId: updateIngredientForBasket
       security:
@@ -422,7 +712,7 @@ paths:
                   example: 671822ae6024e6630bb87a1a
                 ingredients:
                   type: array
-                  description: list of ingredient want to create
+                  description: list of ingredient want to update
                   items:
                     type: object
                     properties:
@@ -445,9 +735,13 @@ paths:
                       _id:
                         type: string
                         format: mongoId
-                        description: id of ingredient
+                        description: id of ingredient want to update
                         example: 671c6bf12d01f20adb69a778
-
+                    required:
+                      - _id
+              required:
+                - basketId
+                - ingredients
         required: true
       responses:
         "200":
@@ -503,7 +797,7 @@ paths:
         "400":
           description: bad request
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
@@ -528,19 +822,22 @@ paths:
                   description: id of basket
                   format: mongoId
                   example: 671822ae6024e6630bb87a1a
-                ingredientIds:
+                ingredients:
                   type: array
-                  description: list of ingredientID want to delete
+                  description: list id of ingredient want to delete
                   items:
                     type: string
                     description: id of ingredient
-                    example:
-                      [
-                        "671c6bf12d01f20adb69a778",
-                        "671c6c1eef705c133aef6763",
-                        "671c6e046778372715ee0bde",
-                      ]
-
+                    example: 671c6bf12d01f20adb69a778
+                  example:
+                    [
+                      "671c6bf12d01f20adb69a778",
+                      "671c6c1eef705c133aef6763",
+                      "671c6e046778372715ee0bde",
+                    ]
+              required:
+                - basketId
+                - ingredients
         required: true
       responses:
         "200":
@@ -584,11 +881,416 @@ paths:
                           type: object
                         example: []
         "403":
-          description: unauthorize
+          description: forbidden
         "404":
           description: Khong tim thay gio hang
         "500":
           description: "Server error"
+
+  /recipe:
+    post:
+      tags:
+        - recipe
+      summary: create new recipe
+      description: Create new recipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipe"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    allOf:
+                      - $ref: "#/components/schemas/Recipe"
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "6722122f7427353a3620b52c"
+        "403":
+          description: forbidden
+        "500":
+          description: "Server error"
+
+    get:
+      tags:
+        - recipe
+      summary: get recipe of user
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+  /recipe/{recipeId}:
+    patch:
+      tags:
+        - recipe
+      summary: update a recipe
+      description: update recipe by recipeId
+      operationId: updateRecipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: ID of the recipe to update
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipe_name:
+                  type: string
+                  example: "Cong thuc nau an 30/10"
+                recipe_description:
+                  type: string
+                  example: ""
+                recipe_ingredients:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/RecipeIngredientRequest"
+                recipe_cook_time:
+                  type: string
+                  example: ""
+                recipe_youtube_url:
+                  type: string
+                  example: ""
+                recipe_rating:
+                  type: number
+                  format: float
+                  example: 4.5
+                recipe_category:
+                  type: string
+                  example: ""
+                recipe_image:
+                  type: string
+                  example: ""
+                is_published:
+                  type: boolean
+                  example: false
+                is_draft:
+                  type: boolean
+                  example: true
+                recipe_id_crawl:
+                  type: string
+                  example: "x"
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    allOf:
+                      - $ref: "#/components/schemas/Recipe"
+                      - type: object
+                        properties:
+                          _id:
+                            type: string
+                            example: "6722122f7427353a3620b52c"
+        "403":
+          description: forbidden
+        "404":
+          description: Khong tim thay recipe
+        "500":
+          description: "Server error"
+    delete:
+      tags:
+        - recipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      parameters:
+        - name: basketId
+          in: path
+          required: true
+          description: ID of the basket to update
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: ok
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    type: string
+                    example: xoa thanh cong
+        "403":
+          description: forbidden
+        "404":
+          description: Khong tim thay recipe
+        "500":
+          description: "Server error"
+  /recipe/ingredients:
+    post:
+      tags:
+        - recipe
+      summary: add ingredient for recipe
+      description: add new ingredient for a recipe
+      operationId: addIngredientForRecipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeId:
+                  type: string
+                  description: id of recipe
+                  format: mongoId
+                  example: 6722c82271d554fc3ef9005f
+                ingredients:
+                  type: array
+                  description: list of ingredient want to add for recipe
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: name of ingredient
+                        example: thit cho
+                      quantity:
+                        type: number
+                        description: quantity of ingredient
+                        example: 2
+                      category:
+                        type: string
+                        description: category of ingredient
+                        example: thit
+                      unit:
+                        type: string
+                        description: unit of ingredient
+                        example: con
+                    required:
+                      - name
+              required:
+                - recipeId
+                - ingredients
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Them ingredient thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    $ref: "#/components/schemas/RecipeResponse"
+        "400":
+          description: bad request
+        "403":
+          description: forbidden
+        "404":
+          description: Khong tim thay cong thuc
+        "500":
+          description: "Server error"
+    patch:
+      tags:
+        - recipe
+      summary: update ingredients in recipe
+      description: update ingredient in a recipe
+      operationId: updateIngredientForRecipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeId:
+                  type: string
+                  description: id of recipe
+                  format: mongoId
+                  example: 6722c82271d554fc3ef9005f
+                ingredients:
+                  type: array
+                  description: list of ingredient want to update
+                  items:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        description: name of ingredient
+                        example: doraemon
+                      quantity:
+                        type: number
+                        description: quantity of ingredient
+                        example: 2
+                      category:
+                        type: string
+                        description: category of ingredient
+                        example: nguoi may
+                      unit:
+                        type: string
+                        description: unit of ingredient
+                        example: con
+                      _id:
+                        type: string
+                        format: mongoId
+                        description: id of ingredient want to update
+                        example: 6722cc787d3c1bfafc3623e6
+                    required:
+                      - _id
+              required:
+                - recipeId
+                - ingredients
+        required: true
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Update ingredient thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    $ref: "#/components/schemas/RecipeResponse"
+        "400":
+          description: bad request
+        "403":
+          description: forbidden
+        "404":
+          description: Khong tim thay cong thuc
+        "500":
+          description: "Server error"
+    delete:
+      tags:
+        - recipe
+      summary: delete some ingredient
+      description: delete some ingredient by their id
+      operationId: deleteIngredientForRecipe
+      security:
+        - RefreshTokenAuth: []
+          ClientAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipeId:
+                  type: string
+                  description: id of recipe
+                  format: mongoId
+                  example: 671822ae6024e6630bb87a1a
+                ingredients:
+                  type: array
+                  description: list id of ingredient want to delete
+                  items:
+                    type: string
+                    description: id of ingredient
+                    example: 671c6bf12d01f20adb69a778
+                  example:
+                    ["671c6bf12d01f20adb69a778", "671c6c1eef705c133aef6763"]
+              required:
+                - recipeId
+                - ingredients
+        required: true
+      responses:
+        "200":
+          description: Successful operation. Return a recipe after delete its ingredients
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: message of response
+                    example: Xoa ingredients thanh cong
+                  status:
+                    type: integer
+                    example: 200
+                  metadata:
+                    $ref: "#/components/schemas/RecipeResponse"
+        "403":
+          description: forbidden
+        "404":
+          description: Khong tim thay gio hang
+        "500":
+          description: "Server error"
+
 components:
   schemas:
     Basket:
@@ -646,6 +1348,125 @@ components:
           description: id of ingredient
           example: 67184d96fd64d42e3ca7b112
 
+    RecipeIngredientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "thit cho"
+        quantity:
+          type: integer
+          example: 2
+        unit:
+          type: string
+          example: "con"
+        category:
+          type: string
+          example: "thit"
+      required:
+        - name
+    RecipeIngredientResponse:
+      allOf:
+        - $ref: "#/components/schemas/RecipeIngredientRequest"
+        - type: object
+          properties:
+            _id:
+              type: string
+              example: "6722122f7427353a3620b52c"
+    Recipe:
+      type: object
+      properties:
+        recipe_name:
+          type: string
+          example: "Cong thuc nau an 30/10"
+        recipe_description:
+          type: string
+          example: ""
+        recipe_ingredients:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecipeIngredientRequest"
+        recipe_cook_time:
+          type: string
+          example: ""
+        recipe_youtube_url:
+          type: string
+          example: ""
+        recipe_rating:
+          type: number
+          format: float
+          example: 4.5
+        recipe_category:
+          type: string
+          example: ""
+        recipe_image:
+          type: string
+          example: ""
+        is_published:
+          type: boolean
+          example: false
+        is_draft:
+          type: boolean
+          example: true
+        recipe_id_crawl:
+          type: string
+          example: "x"
+      required:
+        - recipe_name
+
+    RecipeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "ok"
+        status:
+          type: integer
+          example: 200
+        metadata:
+          type: object
+          properties:
+            _id:
+              type: string
+              example: "6722c82271d554fc3ef9005f"
+            userId:
+              type: string
+              example: "6721c2a8030ed1318fb9ca4e"
+            recipe_name:
+              type: string
+              example: "Cong thuc nau an 30/10"
+            recipe_description:
+              type: string
+              example: ""
+            recipe_ingredients:
+              type: array
+              items:
+                $ref: "#/components/schemas/RecipeIngredientResponse"
+            recipe_cook_time:
+              type: string
+              example: ""
+            recipe_youtube_url:
+              type: string
+              example: ""
+            recipe_rating:
+              type: number
+              format: float
+              example: 4.5
+            recipe_category:
+              type: string
+              example: ""
+            recipe_image:
+              type: string
+              example: ""
+            is_published:
+              type: boolean
+              example: false
+            is_draft:
+              type: boolean
+              example: true
+            recipe_id_crawl:
+              type: string
+              example: "x"
   securitySchemes:
     RefreshTokenAuth:
       type: apiKey

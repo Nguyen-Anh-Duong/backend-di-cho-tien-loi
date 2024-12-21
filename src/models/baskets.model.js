@@ -31,6 +31,10 @@ const basketSchema = mongoose.Schema(
         },
       },
     ],
+    totalMoney: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

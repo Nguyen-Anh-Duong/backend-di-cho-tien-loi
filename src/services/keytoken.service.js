@@ -79,8 +79,6 @@ class KeyTokenService {
         (err, decode) => {
           if (err) {
             console.error(`error verify:: `, err);
-          } else {
-            console.log(`decode verify:: `, decode);
           }
         }
       );

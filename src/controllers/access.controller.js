@@ -44,7 +44,7 @@ class AccessController {
   changePassword = async (req, res, next) => {
     new SuccessResponse({
       message: "change password success!!",
-      metadata: await AccessService.changePassword(req.body),
+      metadata: await AccessService.changePassword({...req.user, ...req.body}),
     }).send(res);
   };
   resetPassword = async (req, res, next) => {
