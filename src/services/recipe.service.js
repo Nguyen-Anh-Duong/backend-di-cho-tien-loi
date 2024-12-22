@@ -11,7 +11,7 @@ class RecipeService {
     return categories;
   }
   static async getAllRecipes() {
-    const recipes = await Recipe.find().lean();
+    const recipes = await Recipe.find({is_published: true}).lean();
     return recipes;
   }
   static async getPersonalRecipes(req) {

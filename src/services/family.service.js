@@ -56,7 +56,7 @@ class FamilyService {
 
   //hàm này cần nghĩ thêm
   static getFamilyInformation = async ({ familyId }) => {
-    const foundFamily = await Family.findById(familyId);
+    const foundFamily = await Family.findById(familyId).populate('fam_members.userId');
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
     return parseFamily(foundFamily);
   };
@@ -184,12 +184,17 @@ const parseFamily = function (family) {
   const response = family.toObject();
   response.family_id = response._id;
   delete response._id;
-  //   delete response.createdAt;
-  //   delete response.updatedAt;
   delete response.__v;
 
   const { fam_members } = response;
-  fam_members.map((member) => delete member._id);
+  response.fam_members = fam_members.map((member) => ({
+    userId: {
+      id: member.userId._id,
+      name: member.userId.user_name,
+      role: member.role
+    }
+  }));
+  
   return response;
 };
 
