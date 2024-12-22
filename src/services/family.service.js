@@ -59,13 +59,17 @@ class FamilyService {
     return parseFamily(foundFamily);
   };
 
-  static deleteFamily = async ({ familyId, userId }) => {
+  static deleteFamily =  async ({ familyId, userId }) => {
     //Tim xem co family khong
     const foundFamily = await Family.findById(familyId);
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
     //kiem tra xem admin cua family co id trung voi userId khong
     if (userId != foundFamily.created_by)
       throw new ApiError("Ban khong phai la admin cua nhom.", 400);
+    await User.updateMany(
+      { user_family_group: familyId },
+      { $set: { user_family_group: null }} )
+    await ShoppingList.deleteMany({ family_id: familyId });
 
     await foundFamily.deleteOne();
   };
