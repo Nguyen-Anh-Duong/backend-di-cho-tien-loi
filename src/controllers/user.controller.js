@@ -36,7 +36,18 @@ class UserController {
     getUser = async(req, res, next) => {
         new SuccessResponse({
             message: "Get user success",
-            metadata: await UserService.getUser(req.user.userId)
+            metadata: await UserService.getUser({...req.user})
+        }).send(res)
+    }
+    saveToken =  async (req, res, next) => {
+        const { fcmToken } = req.body;
+        const {userId} = req.user
+        new SuccessResponse({
+            message: {
+                en: "Save Token OK!",
+        
+            },
+            metadata: await UserService.saveToken({ userId, fcmToken } )
         }).send(res)
     }
 }

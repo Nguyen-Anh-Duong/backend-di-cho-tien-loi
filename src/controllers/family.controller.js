@@ -2,6 +2,17 @@ const FamilyService = require("../services/family.service");
 const { SuccessResponse } = require("../core/success.response");
 
 class FamilyController {
+  
+  static assignTask = async (req, res, next) => {
+    const { familyId, userId, listId } = req.params
+    const adminId = req.user.userId
+    const {taskDetails} = req.body
+    return new SuccessResponse({
+      message: "Giao task thanh cong.",
+      statusCode: 200,
+      metadata: await FamilyService.assignTask({ familyId, taskDetails , adminId, userId, listId}),
+    }).send(res);
+  };
   static createNewFamily = async (req, res, next) => {
     const { userId } = req.user;
     const { fam_name } = req.body;
@@ -15,7 +26,7 @@ class FamilyController {
   static updateFamilyInformation = async (req, res, next) => {
     const { userId } = req.user;
     const { fam_name, fam_members, fam_shared_lists } = req.body;
-    const { familyId } = req.params;
+    const { familyId, listId } = req.params;
     return new SuccessResponse({
       message: "Cap nhat thong tin family thanh cong.",
       statusCode: 200,
@@ -68,7 +79,7 @@ class FamilyController {
     const { code } = req.body;
     const { userId } = req.user;
     return new SuccessResponse({
-      message: "Da gui yeu cau tham gia nhom.",
+      message: "Da tham gia nhom OK.",
       statusCode: 200,
       metadata: await FamilyService.joinFamily({
         code,
@@ -77,6 +88,20 @@ class FamilyController {
     }).send(res);
   };
 
+  static acceptInvitation = async (req, res, next) => {
+    const {familyId} = req.params;
+    const {userId} = req.body;
+    const {adminId} = req.user
+    return new SuccessResponse({
+      message: "Chap nhan tham gia nhom",
+      statusCode: 200,
+      metadata: await FamilyService.acceptMember({
+        userId,
+        familyId,
+        adminId
+      }),
+    }).send(res);
+  }
   static leaveFamily = async (req, res, next) => {
     const { familyId } = req.params;
     const { userId } = req.user;

@@ -44,6 +44,14 @@ const userSchema = new Schema(
         ref: "Recipe",
       },
     ],
+    fcmToken: { type: String },
+    notifications: [
+      {
+        message: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+        from: { type: Schema.Types.ObjectId, ref: "User" },
+      },
+    ],
   },
   {
     timestamps: true,

@@ -2,11 +2,27 @@ const ApiError = require("../core/ApiError");
 const Family = require("../models/familygroup.model");
 const ShoppingList = require("../models/shoppinglist.model");
 const User = require("../models/user.model");
+const userModel = require('../models/user.model');
+const admin = require('../firebase/firebaseAdmin.js'); 
 
 class FamilyService {
+  static acceptMember = async ({ familyId, userId, adminId }) => {
+    const foundFamily = await Family.findById(familyId);
+    if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
+
+    const isAdmin = foundFamily.fam_members.some(member => member.userId.toString() === adminId && member.role === 'admin');
+    if (!isAdmin) throw new ApiError("Chi co admin moi co quyen chap nhan thanh vien.", 403);
+
+    const memberExists = foundFamily.fam_members.some(member => member.userId.toString() === userId);
+    if (memberExists) throw new ApiError("Thanh vien da ton tai trong nhom.", 400);
+     foundFamily.fam_members.push({ userId, role: 'member' });
+     return parseFamily(foundFamily);
+  };
   static createNewFamily = async ({ fam_name, userId }) => {
     const user = await User.findById(userId);
-
+    if (user.user_family_group) {
+      throw new ApiError("May dinh ngoai tinh a", 400);
+  }
     const newFamily = new Family({
       fam_name,
       fam_members: [{ userId, role: "admin" }],
@@ -64,9 +80,18 @@ class FamilyService {
   // quan li thanh vien
 
   static joinFamily = async ({ code, userId }) => {
-    const foundFamily = await Family.findOne({ code });
+    const foundFamily = await Family.findOne({ code: code });
     if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
+
+    const memberExists = foundFamily.fam_members.some(member => member.userId.toString() === userId);
+    if (memberExists) throw new ApiError("User đã là thành viên của gia đình này.", 400);
     foundFamily.fam_members.push({ userId });
+
+    const foundUser = await userModel.findById(userId)
+    if(!foundUser) throw new ApiError("Không tìm thấy user", 404)
+    foundUser.user_family_group = foundFamily._id;
+
+    await foundUser.save();
     await foundFamily.save();
   };
 
@@ -177,6 +202,40 @@ class FamilyService {
     )
       throw new ApiError("Ban khong co quyen xoa list nay.", 400);
     else await foundShoppingList.deleteOne();
+  };
+
+  static assignTask = async ({ familyId, userId, taskDetails, adminId, listId }) => {
+    const foundFamily = await Family.findById(familyId);
+    if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
+
+    const isAdmin = foundFamily.fam_members.some(member => {
+      console.log(`${member} -- ${adminId}`)
+      return member.userId.toString() === adminId && member.role === 'admin'
+    });
+    if (!isAdmin) throw new ApiError("Chi co admin moi co quyen giao viec.", 403);
+
+    const user = await User.findById(userId);
+    if (!user) throw new ApiError("Khong tim thay nguoi dung.", 404);
+    console.log(`listId :: ${listId}`)
+    const foundShoppingList = await ShoppingList.findById(listId);
+    if(!foundShoppingList) throw new ApiError("Khong tim thay gio hang", 404);
+
+    foundShoppingList.workerId = userId;
+    await foundShoppingList.save();
+    // Gửi thông báo đến người dùng
+    const notification = {
+      title: 'Bạn đã được giao việc',
+      body: taskDetails,
+    };
+
+    const message = {
+      notification: notification,
+      token: user.fcmToken,
+    };
+
+    await admin.messaging().send(message);
+
+    return { message: `Task assigned successfully.From:: ${adminId} to ${userId} ` };
   };
 }
 

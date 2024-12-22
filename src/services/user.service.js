@@ -4,10 +4,17 @@ const { NotFoundError, BadRequestError } = require("../core/error.response")
 const userModel = require("../models/user.model")
 const {convertToObjectId, getInfoData} = require('../utils')
 class UserService {
-    static getUser = async (userId) => {
+    static saveToken = async ({ userId, fcmToken } ) => {
+        const user = await userModel.findById(userId);
+        if (!user) return res.status(404).send("User not found.");
+        user.fcmToken = fcmToken;
+        await user.save();
+    }
+    static getUser = async ({userId}) => {
+        console.log(userId)
         const user = await userModel.findById(userId);
 
-        return getInfoData({object: user, fields: ["user_name", "user_email", "user_phone", "user_sex", "user_avatar"]})
+        return user;
     }
     static findAllUsers = async () => {
         return await userModel.find()

@@ -16,6 +16,8 @@ router.delete(
   asyncHandler(FamilyController.deleteMembers)
 );
 
+router.post("/:familyId/assign-task/:userId/:listId", asyncHandler(FamilyController.assignTask))
+
 //router crud nhom
 router.get("/:familyId", asyncHandler(FamilyController.getFamilyInformation));
 //router.get("/", asyncHandler(FamilyController.getAllFamiliesJoined));
