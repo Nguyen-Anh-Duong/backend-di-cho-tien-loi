@@ -15,8 +15,37 @@ tags:
     description: Everything about basket
   - name: recipe
     description: Operations about recipe
+  - name: family
+    description: endpoint family
 
 paths:
+  /resend-otp:
+   post:
+      summary: Resend OTP for email verification
+      operationId: resendOTP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  otp:
+                    type: string
   /pre_signup:
     post:
       tags:
@@ -1290,6 +1319,312 @@ paths:
           description: Khong tim thay gio hang
         "500":
           description: "Server error"
+
+  /v1/api/family:
+    post:
+      summary: Create a new family
+      operationId: createNewFamily
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fam_name:
+                  type: string
+                userId:
+                  type: string
+      responses:
+        '200':
+          description: Family created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}:
+    get:
+      summary: Get family information
+      operationId: getFamilyInformation
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Family information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  family_id:
+                    type: string
+                  fam_name:
+                    type: string
+                  fam_members:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        userId:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            role:
+                              type: string
+
+    delete:
+      summary: Delete a family
+      operationId: deleteFamily
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Family deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/members:
+    post:
+      summary: Accept a member into the family
+      operationId: acceptMember
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                adminId:
+                  type: string
+      responses:
+        '200':
+          description: Member accepted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/members/{userId}:
+    delete:
+      summary: Remove a member from the family
+      operationId: deleteMembers
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to remove
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Member removed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/join:
+    post:
+      summary: Join a family
+      operationId: joinFamily
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family to join
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code:
+                  type: string
+      responses:
+        '200':
+          description: Successfully joined the family
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/leave:
+    post:
+      summary: Leave a family
+      operationId: leaveFamily
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family to leave
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully left the family
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/shopping-lists:
+    post:
+      summary: Create a new shopping list
+      operationId: createNewShoppingList
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                ingredients:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Shopping list created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /v1/api/family/{familyId}/shopping-lists/{listId}:
+    patch:
+      summary: Update a shopping list
+      operationId: updateShoppingListById
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+        - name: listId
+          in: path
+          required: true
+          description: ID of the shopping list to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                ingredients:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Shopping list updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+    delete:
+      summary: Delete a shopping list
+      operationId: deleteShoppingList
+      parameters:
+        - name: familyId
+          in: path
+          required: true
+          description: ID of the family
+          schema:
+            type: string
+        - name: listId
+          in: path
+          required: true
+          description: ID of the shopping list to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Shopping list deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
 components:
   schemas:
