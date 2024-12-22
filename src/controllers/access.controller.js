@@ -59,5 +59,14 @@ class AccessController {
       metadata: await AccessService.checkOTPResetPassword(req.body),
     }).send(res);
   };
+  
+  resendOTP = async (req, res, next) => {
+    const {email, name} = req.body
+    new SuccessResponse({
+      message: "check OTP reset password success!!",
+      metadata: await AccessService.resendOTP({email, name}),
+    }).send(res);
+  };
+  
 }
 module.exports = new AccessController();

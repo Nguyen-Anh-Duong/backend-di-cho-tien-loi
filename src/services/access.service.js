@@ -158,6 +158,18 @@ class AccessService {
 
     return { message: "OTP sent to email for verification", otp };
   }
+  static async resendOTP({ email, name }) {
+    const foundUser = await userModel.findOne({ user_email: email }).lean();
+    if (foundUser) throw new BadRequestError("User already exists");
+
+    const otp = await OTPService.generateOTP(email);
+    console.log(otp)
+    await sendOTP({ email, name, otp }).catch((err) => {
+      console.log(err);
+    });
+
+    return { message: "OTP sent to email for verification", otp };
+  }
   static async refreshToken({ refreshToken }) {
     const keyStore = await keytokenModel.findOne({
       refreshToken: refreshToken,
