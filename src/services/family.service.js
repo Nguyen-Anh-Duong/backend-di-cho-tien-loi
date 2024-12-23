@@ -97,6 +97,9 @@ class FamilyService {
 
     await foundUser.save();
     await foundFamily.save();
+    return {
+      famlily_id:  foundUser.user_family_group 
+    }
   };
 
   static leaveFamily = async ({ familyId, userId }) => {
@@ -241,6 +244,22 @@ class FamilyService {
 
     return { message: `Task assigned successfully.From:: ${adminId} to ${userId} ` };
   };
+  static getShoppingListsInFamily = async ({ familyId, userId }) => {
+    const foundFamily = await Family.findById(familyId)
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+    if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
+
+    let foundMember = foundFamily.fam_members.find(
+      (member) => member.userId.toString() === userId
+    );
+
+    // nếu userId không nằm trong family thì error
+    if (!foundMember) throw new ApiError("Ban khong nam trong nhom nay.", 400);
+
+    const foundShoppingLists = await ShoppingList.find({ family_id: familyId });
+    return foundShoppingLists.map((item) => parseShoppingList(item));
+  };
 }
 
 const parseFamily = function (family) {
@@ -274,5 +293,6 @@ const parseShoppingList = function (shoppingList) {
 const formatFamilyCode = (familyId) => {
   return familyId.match(/.{1,4}/g).join("-");
 };
+
 
 module.exports = FamilyService;

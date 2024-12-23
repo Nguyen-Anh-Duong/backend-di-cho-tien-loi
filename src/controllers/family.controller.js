@@ -2,6 +2,18 @@ const FamilyService = require("../services/family.service");
 const { SuccessResponse } = require("../core/success.response");
 
 class FamilyController {
+  static getShoppingListsInFamily = async (req, res, next) => {
+    const { familyId } = req.params;
+    const { userId } = req.user;
+    return new SuccessResponse({
+      message: "Lay tat ca shopping list cua family thanh cong.",
+      statusCode: 200,
+      metadata: await FamilyService.getShoppingListsInFamily({
+        familyId,
+        userId,
+      }),
+    }).send(res);
+  };
   
   static assignTask = async (req, res, next) => {
     const { familyId, userId, listId } = req.params

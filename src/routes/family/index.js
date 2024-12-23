@@ -45,5 +45,9 @@ router.delete(
   "/:familyId/shopping-lists/:listId",
   asyncHandler(FamilyController.deleteShoppingList)
 );
+router.get(
+  "/:familyId/shopping-lists",
+  asyncHandler(FamilyController.getShoppingListsInFamily)
+);
 
 module.exports = router;
