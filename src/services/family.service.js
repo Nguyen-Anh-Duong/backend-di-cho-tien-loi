@@ -2,27 +2,37 @@ const ApiError = require("../core/ApiError");
 const Family = require("../models/familygroup.model");
 const ShoppingList = require("../models/shoppinglist.model");
 const User = require("../models/user.model");
-const userModel = require('../models/user.model');
-const admin = require('../firebase/firebaseAdmin.js'); 
+const userModel = require("../models/user.model");
+const admin = require("../firebase/firebaseAdmin.js");
 
 class FamilyService {
   static acceptMember = async ({ familyId, userId, adminId }) => {
     const foundFamily = await Family.findById(familyId);
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
 
-    const isAdmin = foundFamily.fam_members.some(member => member.userId.toString() === adminId && member.role === 'admin');
-    if (!isAdmin) throw new ApiError("Chi co admin moi co quyen chap nhan thanh vien.", 403);
+    const isAdmin = foundFamily.fam_members.some(
+      (member) =>
+        member.userId.toString() === adminId && member.role === "admin"
+    );
+    if (!isAdmin)
+      throw new ApiError(
+        "Chi co admin moi co quyen chap nhan thanh vien.",
+        403
+      );
 
-    const memberExists = foundFamily.fam_members.some(member => member.userId.toString() === userId);
-    if (memberExists) throw new ApiError("Thanh vien da ton tai trong nhom.", 400);
-     foundFamily.fam_members.push({ userId, role: 'member' });
-     return parseFamily(foundFamily);
+    const memberExists = foundFamily.fam_members.some(
+      (member) => member.userId.toString() === userId
+    );
+    if (memberExists)
+      throw new ApiError("Thanh vien da ton tai trong nhom.", 400);
+    foundFamily.fam_members.push({ userId, role: "member" });
+    return parseFamily(foundFamily);
   };
   static createNewFamily = async ({ fam_name, userId }) => {
     const user = await User.findById(userId);
     if (user.user_family_group) {
       throw new ApiError("May dinh ngoai tinh a", 400);
-  }
+    }
     const newFamily = new Family({
       fam_name,
       fam_members: [{ userId, role: "admin" }],
@@ -32,6 +42,7 @@ class FamilyService {
     newFamily.code = formatFamilyCode(newFamily._id.toString());
 
     user.user_family_group = newFamily._id;
+    user.user_role_group = { role: "admin" };
     await user.save();
     await newFamily.save();
 
@@ -59,7 +70,7 @@ class FamilyService {
     return parseFamily(foundFamily);
   };
 
-  static deleteFamily =  async ({ familyId, userId }) => {
+  static deleteFamily = async ({ familyId, userId }) => {
     //Tim xem co family khong
     const foundFamily = await Family.findById(familyId);
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
@@ -68,7 +79,8 @@ class FamilyService {
       throw new ApiError("Ban khong phai la admin cua nhom.", 400);
     await User.updateMany(
       { user_family_group: familyId },
-      { $set: { user_family_group: null }} )
+      { $set: { user_family_group: null } }
+    );
     await ShoppingList.deleteMany({ family_id: familyId });
 
     await foundFamily.deleteOne();
@@ -76,7 +88,9 @@ class FamilyService {
 
   //hàm này cần nghĩ thêm
   static getFamilyInformation = async ({ familyId }) => {
-    const foundFamily = await Family.findById(familyId).populate('fam_members.userId');
+    const foundFamily = await Family.findById(familyId).populate(
+      "fam_members.userId"
+    );
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
     return parseFamily(foundFamily);
   };
@@ -87,19 +101,22 @@ class FamilyService {
     const foundFamily = await Family.findOne({ code: code });
     if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
 
-    const memberExists = foundFamily.fam_members.some(member => member.userId.toString() === userId);
-    if (memberExists) throw new ApiError("User đã là thành viên của gia đình này.", 400);
+    const memberExists = foundFamily.fam_members.some(
+      (member) => member.userId.toString() === userId
+    );
+    if (memberExists)
+      throw new ApiError("User đã là thành viên của gia đình này.", 400);
     foundFamily.fam_members.push({ userId });
 
-    const foundUser = await userModel.findById(userId)
-    if(!foundUser) throw new ApiError("Không tìm thấy user", 404)
+    const foundUser = await userModel.findById(userId);
+    if (!foundUser) throw new ApiError("Không tìm thấy user", 404);
     foundUser.user_family_group = foundFamily._id;
 
     await foundUser.save();
     await foundFamily.save();
     return {
-      famlily_id:  foundUser.user_family_group 
-    }
+      famlily_id: foundUser.user_family_group,
+    };
   };
 
   static leaveFamily = async ({ familyId, userId }) => {
@@ -211,27 +228,34 @@ class FamilyService {
     else await foundShoppingList.deleteOne();
   };
 
-  static assignTask = async ({ familyId, userId, taskDetails, adminId, listId }) => {
+  static assignTask = async ({
+    familyId,
+    userId,
+    taskDetails,
+    adminId,
+    listId,
+  }) => {
     const foundFamily = await Family.findById(familyId);
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
 
-    const isAdmin = foundFamily.fam_members.some(member => {
-      console.log(`${member} -- ${adminId}`)
-      return member.userId.toString() === adminId && member.role === 'admin'
+    const isAdmin = foundFamily.fam_members.some((member) => {
+      console.log(`${member} -- ${adminId}`);
+      return member.userId.toString() === adminId && member.role === "admin";
     });
-    if (!isAdmin) throw new ApiError("Chi co admin moi co quyen giao viec.", 403);
+    if (!isAdmin)
+      throw new ApiError("Chi co admin moi co quyen giao viec.", 403);
 
     const user = await User.findById(userId);
     if (!user) throw new ApiError("Khong tim thay nguoi dung.", 404);
-    console.log(`listId :: ${listId}`)
+    console.log(`listId :: ${listId}`);
     const foundShoppingList = await ShoppingList.findById(listId);
-    if(!foundShoppingList) throw new ApiError("Khong tim thay gio hang", 404);
+    if (!foundShoppingList) throw new ApiError("Khong tim thay gio hang", 404);
 
     foundShoppingList.workerId = userId;
     await foundShoppingList.save();
     // Gửi thông báo đến người dùng
     const notification = {
-      title: 'Bạn đã được giao việc',
+      title: "Bạn đã được giao việc",
       body: taskDetails,
     };
 
@@ -242,7 +266,9 @@ class FamilyService {
 
     await admin.messaging().send(message);
 
-    return { message: `Task assigned successfully.From:: ${adminId} to ${userId} ` };
+    return {
+      message: `Task assigned successfully.From:: ${adminId} to ${userId} `,
+    };
   };
   static getShoppingListsInFamily = async ({ familyId, userId }) => {
     const foundFamily = await Family.findById(familyId)
@@ -273,10 +299,10 @@ const parseFamily = function (family) {
     userId: {
       id: member.userId._id,
       name: member.userId.user_name,
-      role: member.role
-    }
+      role: member.role,
+    },
   }));
-  
+
   return response;
 };
 
@@ -293,6 +319,5 @@ const parseShoppingList = function (shoppingList) {
 const formatFamilyCode = (familyId) => {
   return familyId.match(/.{1,4}/g).join("-");
 };
-
 
 module.exports = FamilyService;

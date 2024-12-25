@@ -11,7 +11,11 @@ const userSchema = new Schema(
     user_email: { type: String, required: true },
     user_password: { type: String, required: true },
     user_slug: { type: String, default: "" },
-    user_role_system: { type: Schema.Types.ObjectId, ref: "Role", default: null },
+    user_role_system: {
+      type: Schema.Types.ObjectId,
+      ref: "Role",
+      default: null,
+    },
     user_sex: { type: String, default: "" },
     user_phone: { type: String, default: "" },
     user_avatar: { type: String, default: "" },
@@ -24,13 +28,13 @@ const userSchema = new Schema(
     user_role_group: {
       groupId: {
         type: Schema.Types.ObjectId,
-        ref: 'FamilyGroup'
+        ref: "FamilyGroup",
       },
       role: {
         type: String,
-        enum: ['admin', 'member'],
-        default: 'member'
-      }
+        enum: ["admin", "member"],
+        // default: 'member'
+      },
     },
     user_shopping_lists: [
       {
