@@ -50,5 +50,15 @@ class UserController {
             metadata: await UserService.saveToken({ userId, fcmToken } )
         }).send(res)
     }
+    review = async (req, res, next) => {
+        const { userId } = req.user;
+        const { month, year } = req.params;
+        new SuccessResponse({
+            message: {
+                en: `Review ${month}-$${year}}`,
+            },
+            metadata: await UserService.review({ userId, month, year } )
+        }).send(res)
+    }
 }
 module.exports = new UserController()

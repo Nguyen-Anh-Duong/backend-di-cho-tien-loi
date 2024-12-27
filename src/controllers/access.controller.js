@@ -48,9 +48,17 @@ class AccessController {
     }).send(res);
   };
   resetPassword = async (req, res, next) => {
+    const {email, otp} = req.body
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length);
+        password += characters[randomIndex];
+    }
+
     new SuccessResponse({
       message: "reset password success!!",
-      metadata: await AccessService.resetPassword(req.body),
+      metadata: await AccessService.resetPassword({email, password, otp}),
     }).send(res);
   };
   checkOTPResetPassword = async (req, res, next) => {

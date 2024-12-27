@@ -54,6 +54,7 @@ const shoppingListSchema = new Schema(
         },
       },
     ],
+ 
     created_by: { type: Schema.Types.ObjectId, ref: "User", required: true },
     family_id: { type: Schema.Types.ObjectId, ref: "FamilyGroups" },
   },

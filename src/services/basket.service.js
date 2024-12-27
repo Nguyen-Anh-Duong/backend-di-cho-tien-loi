@@ -16,6 +16,7 @@ class BasketService {
       totalMoney,
     });
     await newBasket.save();
+    console.log(name)
 
     const response = newBasket.toObject();
     response.basketId = response._id;

@@ -11,6 +11,7 @@ const router = express.Router()
 router.use(authentication);
 router.get('/', asyncHandler(userController.getUser))
 router.post('/save-token', asyncHandler(userController.saveToken))
+router.get('/review/:month/:year', asyncHandler(userController.review))
 router.get('/viewAny', checkSystemPermission("readAny", "user"), asyncHandler(userController.viewAny))
 router.patch('/updateProfile/:userId', checkSystemPermission("updateOwn", "user"), asyncHandler(userController.updateProfile))
 router.post('/block/:userId', checkSystemPermission("updateOwn", "user"), asyncHandler(userController.blockUser))

@@ -158,7 +158,7 @@ class AccessService {
 
     return { message: "OTP sent to email for verification", otp };
   }
-  static async resendOTP({ email, name }) {
+  static async resendOTP({ email, name='Bạn' }) {
     const foundUser = await userModel.findOne({ user_email: email }).lean();
     if (foundUser) throw new BadRequestError("User already exists");
 
@@ -207,6 +207,7 @@ class AccessService {
     if (!foundUser) throw new NotFoundError("User not found");
     const otp = await OTPService.generateOTP(email);
     await sendOTPResetPassword({ email, name: foundUser.user_name, otp });
+    console.log(otp)
     //TODO: sau cmt otp lai
     return {
       toUserEmail: email,
@@ -216,12 +217,17 @@ class AccessService {
   static async resetPassword({ email, password, otp }) {
     const isValidOTP = await OTPService.verifyOTP(email, otp);
     if (!isValidOTP) throw new ForbiddenError("Invalid OTP");
+
     const foundUser = await userModel.findOne({ user_email: email }).lean();
     if (!foundUser) throw new NotFoundError("User not found");
+
+
     const passwordHash = await bcrypt.hash(password, 10);
     await userModel.findByIdAndUpdate(foundUser._id, {
       user_password: passwordHash,
     });
+    await sendOTPResetPassword({ email, name: foundUser.user_name, otp: password });
+
     return { message: "Reset password success" };
   }
   static async changePassword({ email, oldPassword, newPassword , userId}) {

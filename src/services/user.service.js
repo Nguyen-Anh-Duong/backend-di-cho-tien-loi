@@ -1,9 +1,40 @@
 'use strict'
 
-const { NotFoundError, BadRequestError } = require("../core/error.response")
+const { NotFoundError, BadRequestError } = require("../core/error.response");
+const ShoppingList = require("../models/shoppinglist.model");
 const userModel = require("../models/user.model")
 const {convertToObjectId, getInfoData} = require('../utils')
 class UserService {
+
+    static async review({userId, month, year}) {
+        const startDate = new Date(year, month - 1, 1); 
+        const endDate = new Date(year, month, 1); 
+
+        const shoppingLists = await ShoppingList.find({created_by: userId});
+        
+        // Tạo một đối tượng để lưu trữ số lượng của từng ingredient
+        const ingredientMap = {};
+
+        // Duyệt qua từng shopping list
+        shoppingLists.forEach(list => {
+            list.ingredients.forEach(ingredient => {
+                // Nếu ingredient đã tồn tại trong ingredientMap, cộng dồn số lượng
+                if (ingredientMap[ingredient.name]) {
+                    ingredientMap[ingredient.name].quantity += ingredient.quantity;
+                } else {
+                    // Nếu chưa tồn tại, thêm mới vào ingredientMap
+                    ingredientMap[ingredient.name] = {
+                        name: ingredient.name,
+                        quantity: ingredient.quantity,
+                        category: ingredient.category,
+                        unit: ingredient.unit,
+                        status: ingredient.status
+                    };
+                }
+            });
+        });
+        return ingredientMap;
+    }
     static saveToken = async ({ userId, fcmToken } ) => {
         const user = await userModel.findById(userId);
         if (!user) return res.status(404).send("User not found.");
