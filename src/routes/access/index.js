@@ -10,10 +10,7 @@ router.post(
   "/request_reset_password",
   asyncHandler(accessController.requestResetPassword)
 );
-router.post(
-  "/resend-otp",
-  asyncHandler(accessController.resendOTP)
-);
+router.post("/resend-otp", asyncHandler(accessController.resendOTP));
 router.post("/reset_password", asyncHandler(accessController.resetPassword));
 router.post("/pre_signup", asyncHandler(accessController.preSignUp));
 router.post(
@@ -21,6 +18,7 @@ router.post(
   asyncHandler(accessController.verifyOTPAndSignUp)
 );
 router.post("/login", asyncHandler(accessController.logIn));
+router.post("/google-login", asyncHandler(accessController.googleLogin));
 
 //authentication
 // router.use(authentication)

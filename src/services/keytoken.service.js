@@ -71,17 +71,18 @@ class KeyTokenService {
         algorithm: "RS256",
         expiresIn: "60d",
       });
+      console.log("111");
       //check
-      JWT.verify(
-        accessToken,
-        publicKey,
-        { algorithm: ["RS256"] },
-        (err, decode) => {
-          if (err) {
-            console.error(`error verify:: `, err);
-          }
-        }
-      );
+      // JWT.verify(
+      //   accessToken,
+      //   publicKey,
+      //   { algorithm: ["RS256"] },
+      //   (err, decode) => {
+      //     if (err) {
+      //       console.error(`error verify:: `, err);
+      //     }
+      //   }
+      // );
       return { accessToken, refreshToken };
     } catch (error) {
       console.log(`create token pair error:: ${error}`);

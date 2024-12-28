@@ -79,7 +79,7 @@ class FamilyService {
       throw new ApiError("Ban khong phai la admin cua nhom.", 400);
     await User.updateMany(
       { user_family_group: familyId },
-      { $set: { user_family_group: null } }
+      { $set: { user_family_group: null, user_role_group: { role: null } } }
     );
     await ShoppingList.deleteMany({ family_id: familyId });
 
@@ -111,6 +111,7 @@ class FamilyService {
     const foundUser = await userModel.findById(userId);
     if (!foundUser) throw new ApiError("Không tìm thấy user", 404);
     foundUser.user_family_group = foundFamily._id;
+    foundUser.user_role_group = { role: "member" };
 
     await foundUser.save();
     await foundFamily.save();
@@ -126,7 +127,12 @@ class FamilyService {
     foundFamily.fam_members = foundFamily.fam_members.filter(
       (member) => member.userId.toString() != userId
     );
+    const foundUser = await userModel.findById(userId);
+    if (!foundUser) throw new ApiError("Không tìm thấy user", 404);
+    foundUser.user_family_group = null;
+    foundUser.user_role__group.role = "member";
 
+    await foundUser.save();
     await foundFamily.save();
   };
 
@@ -164,7 +170,7 @@ class FamilyService {
       ingredients,
       created_by: userId,
       family_id: familyId,
-      workerId: userId
+      workerId: userId,
     });
     await shoppingList.save();
     return parseShoppingList(shoppingList);
@@ -307,11 +313,7 @@ const parseFamily = function (family) {
   return response;
 };
 
-const 
-
-
-
-parseShoppingList = function (shoppingList) {
+const parseShoppingList = function (shoppingList) {
   const response = shoppingList.toObject();
   response.list_id = response._id;
   delete response._id;

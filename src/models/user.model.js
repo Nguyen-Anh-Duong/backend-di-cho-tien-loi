@@ -9,7 +9,15 @@ const userSchema = new Schema(
   {
     user_name: { type: String, required: true },
     user_email: { type: String, required: true },
-    user_password: { type: String, required: true },
+    user_password: {
+      type: String,
+      required: true,
+      required: function () {
+        return !this.googleId;
+      },
+    },
+    googleId: { type: String, default: null },
+    googleAccessToken: { type: String, default: null },
     user_slug: { type: String, default: "" },
     user_role_system: {
       type: Schema.Types.ObjectId,
