@@ -30,7 +30,8 @@ async function googleLogin(idToken) {
   if (!user) {
     user = new User({
       user_name: payload1.name,
-      user_email: payload1.email,
+      user_email: payload1.email + "MOCK",
+      user_email_gg: payload1.email,
       googleId: payload1.sub,
       googleAccessToken: idToken,
       user_password: "default_password",
@@ -75,15 +76,9 @@ async function googleLogin(idToken) {
     { userId: user._id },
     { refreshToken: tokens.refreshToken }
   );
-
+  user.user_email = payload1.email;
   return {
-    user: {
-      user_id: user._id,
-      user_name: user.user_name,
-      user_email: user.user_email,
-      user_role_system: user.user_role_system,
-      user_role_group: user.user_role_group,
-    },
+    user: user,
     tokens: {
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,

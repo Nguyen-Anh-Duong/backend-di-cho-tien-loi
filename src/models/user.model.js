@@ -9,6 +9,7 @@ const userSchema = new Schema(
   {
     user_name: { type: String, required: true },
     user_email: { type: String, required: true },
+    user_email_gg: { type: String, default: "" },
     user_password: {
       type: String,
       required: true,
