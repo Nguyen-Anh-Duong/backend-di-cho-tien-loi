@@ -164,6 +164,7 @@ class FamilyService {
       ingredients,
       created_by: userId,
       family_id: familyId,
+      workerId: userId
     });
     await shoppingList.save();
     return parseShoppingList(shoppingList);
@@ -306,7 +307,11 @@ const parseFamily = function (family) {
   return response;
 };
 
-const parseShoppingList = function (shoppingList) {
+const 
+
+
+
+parseShoppingList = function (shoppingList) {
   const response = shoppingList.toObject();
   response.list_id = response._id;
   delete response._id;
