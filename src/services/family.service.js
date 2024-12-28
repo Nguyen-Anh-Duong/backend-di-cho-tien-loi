@@ -130,7 +130,7 @@ class FamilyService {
     const foundUser = await userModel.findById(userId);
     if (!foundUser) throw new ApiError("Không tìm thấy user", 404);
     foundUser.user_family_group = null;
-    foundUser.user_role__group.role = "member";
+    foundUser.user_role_group = { role: null };
 
     await foundUser.save();
     await foundFamily.save();

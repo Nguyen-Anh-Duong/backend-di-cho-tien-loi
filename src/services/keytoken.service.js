@@ -65,11 +65,11 @@ class KeyTokenService {
     try {
       const accessToken = JWT.sign(payload, privateKey, {
         algorithm: "RS256",
-        expiresIn: "2d",
+        expiresIn: "200d",
       });
       const refreshToken = JWT.sign(payload, privateKey, {
         algorithm: "RS256",
-        expiresIn: "60d",
+        expiresIn: "600d",
       });
       console.log("111");
       //check

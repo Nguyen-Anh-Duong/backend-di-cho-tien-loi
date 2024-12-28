@@ -76,7 +76,19 @@ async function googleLogin(idToken) {
     { refreshToken: tokens.refreshToken }
   );
 
-  return user;
+  return {
+    user: {
+      user_id: user._id,
+      user_name: user.user_name,
+      user_email: user.user_email,
+      user_role_system: user.user_role_system,
+      user_role_group: user.user_role_group,
+    },
+    tokens: {
+      accessToken: tokens.accessToken,
+      refreshToken: tokens.refreshToken,
+    },
+  };
 }
 
 module.exports = {
