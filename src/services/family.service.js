@@ -90,17 +90,21 @@ class FamilyService {
     const fcmTokens = foundFamily.fam_members
       .map((member) => member.userId.fcmToken)
       .filter((token) => token);
-
+    console.log(fcmTokens);
     // Gửi thông báo FCM
     const notification = {
       title: "Benri xin thông báo",
-      body: `${foundFamily.fam_name} đã bị xóa T.T`,
+      body: `Gia đình của bạn đã bị xóa T.T`,
     };
     const message = {
       notification: notification,
-      tokens: fcmTokens,
     };
-    await admin.messaging().sendMulticast(message);
+    for (const token of fcmTokens) {
+      console.log(token);
+      message.token = token;
+      await admin.messaging().send(message);
+    }
+    console.log("Da gui FCM");
   };
 
   //hàm này cần nghĩ thêm
@@ -141,13 +145,15 @@ class FamilyService {
 
     const notification = {
       title: "Benri xin thông báo",
-      body: `Có thành viên mới trong ${foundFamily.fam_name}`,
+      body: `Có thành viên mới trong gia đình của bạn.`,
     };
     const message = {
       notification: notification,
-      tokens: fcmTokens,
     };
-    await admin.messaging().sendMulticast(message);
+    for (let token of fcmTokens) {
+      message.token = token;
+      await admin.messaging().send(message);
+    }
     return {
       famlily_id: foundUser.user_family_group,
     };
@@ -189,12 +195,12 @@ class FamilyService {
   }) => {
     const foundFamily = await Family.findById(familyId)
       .select("-createdAt -updatedAt -__v")
-      .populate("fam_members.userId")
+      .populate("fam_members.userId") // lay thong tin user
       .lean();
     if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
 
     const isMember = foundFamily.fam_members.find(
-      (member) => member.userId == userId
+      (member) => member.userId._id.toString() === userId
     );
     if (!isMember) throw new ApiError("Ban khong nam trong nhom nay.", 400);
 
@@ -214,13 +220,16 @@ class FamilyService {
       .filter((token) => token);
     const notification = {
       title: "Benri xin thông báo",
-      body: `Danh sách mua sắm mới đã được tạo trong ${foundFamily.fam_name}`,
+      body: `Danh sách mua sắm mới đã được tạo trong gia đình của bạn.`,
     };
     const message = {
       notification: notification,
-      tokens: fcmTokens,
     };
-    await admin.messaging().sendMulticast(message);
+    for (let token of fcmTokens) {
+      console.log(token);
+      message.token = token;
+      await admin.messaging().send(message);
+    }
     return parseShoppingList(shoppingList);
   };
 

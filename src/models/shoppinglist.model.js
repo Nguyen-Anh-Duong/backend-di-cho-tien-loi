@@ -34,7 +34,8 @@ const shoppingListSchema = new Schema(
       required: true,
     },
     workerId: {
-      type: Schema.Types.ObjectId, ref: "User" 
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     description: {
       type: String,
@@ -44,9 +45,9 @@ const shoppingListSchema = new Schema(
     ingredients: [
       {
         name: { type: String, required: true },
-        quantity: { type: Number, required: true },
+        quantity: { type: Number, default: 0 },
         category: { type: String, default: "" },
-        unit: { type: String, required: true },
+        unit: { type: String, default: "" },
         status: {
           type: String,
           enum: ["pending", "bought"],
@@ -54,7 +55,7 @@ const shoppingListSchema = new Schema(
         },
       },
     ],
- 
+
     created_by: { type: Schema.Types.ObjectId, ref: "User", required: true },
     family_id: { type: Schema.Types.ObjectId, ref: "FamilyGroups" },
   },

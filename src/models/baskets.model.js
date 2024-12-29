@@ -21,9 +21,9 @@ const basketSchema = mongoose.Schema(
     ingredients: [
       {
         name: { type: String, required: true },
-        quantity: { type: Number, required: true },
+        quantity: { type: Number, default: 0 },
         category: { type: String, default: "" },
-        unit: { type: String, required: true },
+        unit: { type: String, default: "" },
         status: {
           type: String,
           enum: ["pending", "bought"],
