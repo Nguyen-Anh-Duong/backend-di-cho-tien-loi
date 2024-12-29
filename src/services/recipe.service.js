@@ -5,14 +5,21 @@ const Recipe = require("../models/recipe.model");
 const User = require("../models/user.model");
 
 class RecipeService {
+  static shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
   static async getAllCategories() {
     const categories = await Recipe.distinct("recipe_category");
     console.log("Categories:", categories);
     return categories;
   }
   static async getAllRecipes() {
-    const recipes = await Recipe.find({is_published: true}).lean();
-    return recipes;
+    const recipes = await Recipe.find({ is_published: true }).lean();
+    return this.shuffleArray(recipes);
   }
   static async getPersonalRecipes(req) {
     const { userId } = req.user;
