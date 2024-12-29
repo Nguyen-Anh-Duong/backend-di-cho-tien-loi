@@ -60,5 +60,26 @@ class UserController {
             metadata: await UserService.review({ userId, month, year } )
         }).send(res)
     }
+    createUser = async (req, res, next) => {
+        const { userId } = req.user;
+        const { month, year } = req.params;
+        const { user_name, user_email, user_password, user_role_system, user_status } = req.body
+        new SuccessResponse({
+            message: {
+                en: `Review ${month}-$${year}}`,
+            },
+            metadata: await UserService.createUser({ user_name, user_email, user_password, user_role_system, user_status } )
+        }).send(res)
+    }
+    deleteUser = async (req, res, next) => {
+    
+        const { deleteId} = req.params
+        new SuccessResponse({
+            message: {
+                en: `DeleteOK`,
+            },
+            metadata: await UserService.deleteUser(deleteId)
+        }).send(res)
+    }
 }
 module.exports = new UserController()

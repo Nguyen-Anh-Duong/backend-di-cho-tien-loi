@@ -19,11 +19,27 @@ class RecipeController {
     }).send(res);
   };
 
+  updateRecipeByAdmin = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "ok",
+      statusCode: 200,
+      metadata: await RecipeService.updateRecipeByAdmin(req),
+    }).send(res);
+  };
+
   deleteRecipe = async (req, res, next) => {
     return new SuccessResponse({
       message: "ok",
       statusCode: 200,
       metadata: await RecipeService.deleteRecipe(req),
+    }).send(res);
+  };
+
+  deleteRecipeAdmin = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "ok",
+      statusCode: 200,
+      metadata: await RecipeService.deleteRecipeAdmin(req),
     }).send(res);
   };
 
@@ -76,6 +92,13 @@ class RecipeController {
       message: "ok",
       statusCode: 200,
       metadata: await RecipeService.getAllRecipes(),
+    }).send(res);
+  };
+  getAllRecipesNo = async (req, res, next) => {
+    return new SuccessResponse({
+      message: "ok",
+      statusCode: 200,
+      metadata: await RecipeService.getAllRecipesNoShuff(),
     }).send(res);
   };
   getAllCategories = async (req, res, next) => {

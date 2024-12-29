@@ -21,6 +21,10 @@ class RecipeService {
     const recipes = await Recipe.find({ is_published: true }).lean();
     return this.shuffleArray(recipes);
   }
+  static async getAllRecipesNoShuff() {
+    const recipes = await Recipe.find({ is_published: true }).lean();
+    return recipes;
+  }
   static async getPersonalRecipes(req) {
     const { userId } = req.user;
     const recipes = await Recipe.find({ userId })
@@ -114,6 +118,49 @@ class RecipeService {
     if (!updateRecipe) throw new ApiError("Không tìm thấy công thức", 404);
     return updateRecipe;
   }
+  static async updateRecipeByAdmin(req) {
+    const { userId } = req.user;
+    const recipeId = req.params.recipeId;
+
+    const {
+      recipe_name,
+      recipe_description,
+      recipe_cook_time,
+      recipe_youtube_url,
+      recipe_rating,
+      recipe_category,
+      recipe_image,
+      is_published,
+      is_draft,
+      recipe_id_crawl,
+      recipe_ingredients,
+    } = req.body;
+
+    const updateRecipe = await Recipe.findByIdAndUpdate(
+      { _id: recipeId},
+      {
+        $set: {
+          recipe_name,
+          recipe_description,
+          recipe_cook_time,
+          recipe_youtube_url,
+          recipe_rating,
+          recipe_category,
+          recipe_image,
+          is_published,
+          is_draft,
+          recipe_id_crawl,
+          recipe_ingredients,
+        },
+      },
+      { new: true, runValidators: true }
+    )
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+
+    if (!updateRecipe) throw new ApiError("Không tìm thấy công thức", 404);
+    return updateRecipe;
+  }
 
   static async deleteRecipe(req) {
     const { userId } = req.user;
@@ -121,6 +168,20 @@ class RecipeService {
     const deleteRecipe = await Recipe.findOneAndDelete({
       _id: recipeId,
       userId,
+    })
+      .select("-createdAt -updatedAt -__v")
+      .lean();
+    if (!deleteRecipe) {
+      if (!recipe) throw new ApiError("Không tìm thấy công thức", 404);
+    }
+    // return deleteRecipe;
+    return "xoa thanh cong";
+  }
+  static async deleteRecipeAdmin(req) {
+    const { userId } = req.user;
+    const recipeId = req.params.recipeId;
+    const deleteRecipe = await Recipe.findOneAndDelete({
+      _id: recipeId,
     })
       .select("-createdAt -updatedAt -__v")
       .lean();
