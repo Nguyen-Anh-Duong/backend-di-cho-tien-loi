@@ -72,7 +72,9 @@ class FamilyService {
 
   static deleteFamily = async ({ familyId, userId }) => {
     //Tim xem co family khong
-    const foundFamily = await Family.findById(familyId);
+    const foundFamily = await Family.findById(familyId).populate(
+      "fam_members.userId"
+    );
     if (!foundFamily) throw new ApiError("Khong tim thay nhom.", 404);
     //kiem tra xem admin cua family co id trung voi userId khong
     if (userId != foundFamily.created_by)
@@ -84,6 +86,21 @@ class FamilyService {
     await ShoppingList.deleteMany({ family_id: familyId });
 
     await foundFamily.deleteOne();
+
+    const fcmTokens = foundFamily.fam_members
+      .map((member) => member.userId.fcmToken)
+      .filter((token) => token);
+
+    // Gửi thông báo FCM
+    const notification = {
+      title: "Benri xin thông báo",
+      body: `${foundFamily.fam_name} đã bị xóa T.T`,
+    };
+    const message = {
+      notification: notification,
+      tokens: fcmTokens,
+    };
+    await admin.messaging().sendMulticast(message);
   };
 
   //hàm này cần nghĩ thêm
@@ -98,9 +115,13 @@ class FamilyService {
   // quan li thanh vien
 
   static joinFamily = async ({ code, userId }) => {
-    const foundFamily = await Family.findOne({ code: code });
+    const foundFamily = await Family.findOne({ code: code }).populate(
+      "fam_members.userId"
+    );
     if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
-
+    const fcmTokens = foundFamily.fam_members
+      .map((member) => member.userId.fcmToken)
+      .filter((token) => token);
     const memberExists = foundFamily.fam_members.some(
       (member) => member.userId.toString() === userId
     );
@@ -115,6 +136,18 @@ class FamilyService {
 
     await foundUser.save();
     await foundFamily.save();
+
+    //thong  bao FB
+
+    const notification = {
+      title: "Benri xin thông báo",
+      body: `Có thành viên mới trong ${foundFamily.fam_name}`,
+    };
+    const message = {
+      notification: notification,
+      tokens: fcmTokens,
+    };
+    await admin.messaging().sendMulticast(message);
     return {
       famlily_id: foundUser.user_family_group,
     };
@@ -156,6 +189,7 @@ class FamilyService {
   }) => {
     const foundFamily = await Family.findById(familyId)
       .select("-createdAt -updatedAt -__v")
+      .populate("fam_members.userId")
       .lean();
     if (!foundFamily) throw new ApiError("Khong tim thay family.", 404);
 
@@ -173,6 +207,20 @@ class FamilyService {
       workerId: userId,
     });
     await shoppingList.save();
+
+    // gui msg
+    const fcmTokens = foundFamily.fam_members
+      .map((member) => member.userId.fcmToken)
+      .filter((token) => token);
+    const notification = {
+      title: "Benri xin thông báo",
+      body: `Danh sách mua sắm mới đã được tạo trong ${foundFamily.fam_name}`,
+    };
+    const message = {
+      notification: notification,
+      tokens: fcmTokens,
+    };
+    await admin.messaging().sendMulticast(message);
     return parseShoppingList(shoppingList);
   };
 
@@ -262,7 +310,7 @@ class FamilyService {
     await foundShoppingList.save();
     // Gửi thông báo đến người dùng
     const notification = {
-      title: "Bạn đã được giao việc",
+      title: "Benri xin thông báo",
       body: taskDetails,
     };
 
