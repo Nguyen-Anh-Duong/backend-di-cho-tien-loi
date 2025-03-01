@@ -28,6 +28,7 @@ require("./dbs/dbs.connect");
 //init route
 app.use("/", require("./routes"));
 
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res, next) => {
@@ -41,6 +42,7 @@ app.get("/cronjob", (req, res, next) => {
 });
 
 if (process.env.ENViRONMENT === "prod") require("./scripts/cronjob");
+
 
 //handle error
 app.use((req, res, next) => {
