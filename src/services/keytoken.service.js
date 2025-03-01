@@ -8,21 +8,21 @@ class KeyTokenService {
   static findByRefreshToken = async (refreshToken) => {
     return await keytokenModel.findOne({ refreshToken });
   };
-  static removeRefreshTokenById = async ({id, refreshToken}) => {
-    const filter = {_id: id};
+  static removeRefreshTokenById = async ({ id, refreshToken }) => {
+    const filter = { _id: id };
     const updateSet = {
       $set: {
         refreshToken: null,
       },
     };
-    if(refreshToken) {
+    if (refreshToken) {
       updateSet.$push = {
         refreshTokensUsed: refreshToken,
-      }
+      };
     }
-    const options = {new: true};
+    const options = { new: true };
     return await keytokenModel.findByIdAndUpdate(filter, updateSet, options);
-  }
+  };
   static removeKeyById = async (id) => {
     return await keytokenModel.findByIdAndDelete(id);
   };
@@ -30,9 +30,9 @@ class KeyTokenService {
     return await keytokenModel.findOne({ userId: userId });
   };
   /**
-   * 
-   * @param {*} param0 
-   * @returns 
+   *
+   * @param {*} param0
+   * @returns
    * @description create or update in database
    */
   static createKeyToken = async ({
@@ -65,26 +65,24 @@ class KeyTokenService {
     try {
       const accessToken = JWT.sign(payload, privateKey, {
         algorithm: "RS256",
-        expiresIn: "2d",
+        expiresIn: "200d",
       });
       const refreshToken = JWT.sign(payload, privateKey, {
         algorithm: "RS256",
-        expiresIn: "60d",
+        expiresIn: "600d",
       });
-      console.log({ accessToken, refreshToken });
+      console.log("111");
       //check
-      JWT.verify(
-        accessToken,
-        publicKey,
-        { algorithm: ["RS256"] },
-        (err, decode) => {
-          if (err) {
-            console.error(`error verify:: `, err);
-          } else {
-            console.log(`decode verify:: `, decode);
-          }
-        }
-      );
+      // JWT.verify(
+      //   accessToken,
+      //   publicKey,
+      //   { algorithm: ["RS256"] },
+      //   (err, decode) => {
+      //     if (err) {
+      //       console.error(`error verify:: `, err);
+      //     }
+      //   }
+      // );
       return { accessToken, refreshToken };
     } catch (error) {
       console.log(`create token pair error:: ${error}`);

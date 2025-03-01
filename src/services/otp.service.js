@@ -3,7 +3,7 @@ const { BadRequestError } = require("../core/error.response");
 
 class OTPService {
   static async generateOTP(email) {
-    const otp = Math.floor( 100000+ Math.random() * 900000).toString();
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
     await otpModel.create({ email, otp });
     return otp;
   }

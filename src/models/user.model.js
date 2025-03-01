@@ -9,9 +9,22 @@ const userSchema = new Schema(
   {
     user_name: { type: String, required: true },
     user_email: { type: String, required: true },
-    user_password: { type: String, required: true },
+    user_email_gg: { type: String, default: "" },
+    user_password: {
+      type: String,
+      required: true,
+      required: function () {
+        return !this.googleId;
+      },
+    },
+    googleId: { type: String, default: null },
+    googleAccessToken: { type: String, default: null },
     user_slug: { type: String, default: "" },
-    user_role_system: { type: Schema.Types.ObjectId, ref: "Role", default: null },
+    user_role_system: {
+      type: Schema.Types.ObjectId,
+      ref: "Role",
+      default: null,
+    },
     user_sex: { type: String, default: "" },
     user_phone: { type: String, default: "" },
     user_avatar: { type: String, default: "" },
@@ -24,13 +37,13 @@ const userSchema = new Schema(
     user_role_group: {
       groupId: {
         type: Schema.Types.ObjectId,
-        ref: 'FamilyGroup'
+        ref: "FamilyGroup",
       },
       role: {
         type: String,
-        enum: ['admin', 'member'],
-        default: 'member'
-      }
+        enum: ["admin", "member"],
+        // default: 'member'
+      },
     },
     user_shopping_lists: [
       {
@@ -42,6 +55,14 @@ const userSchema = new Schema(
       {
         type: Schema.Types.ObjectId,
         ref: "Recipe",
+      },
+    ],
+    fcmToken: { type: String },
+    notifications: [
+      {
+        message: { type: String, required: true },
+        createdAt: { type: Date, default: Date.now },
+        from: { type: Schema.Types.ObjectId, ref: "User" },
       },
     ],
   },
