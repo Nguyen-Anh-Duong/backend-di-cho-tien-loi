@@ -29,12 +29,14 @@ class AccessService {
     if (foundUser) throw new BadRequestError("Da ton tai user");
     await ApiKeyService.createApiKey();
     const defaultRole = await roleSchema.findOne({ rol_name: "user" }).lean();
+
     if (!defaultRole) {
       const newRole = await roleSchema.create({
         rol_name: "user" /*, other fields */,
         rol_slug: "hhehe",
       });
     }
+
     const passwordHash = await bcrypt.hash(password, 10);
     const newUser = await userModel.create({
       user_email: email,
@@ -162,6 +164,7 @@ class AccessService {
 
     return { message: "OTP sent to email for verification", otp };
   }
+
   static async resendOTP({ email, name = "Bạn" }) {
     const foundUser = await userModel.findOne({ user_email: email }).lean();
     if (foundUser) throw new BadRequestError("User already exists");
@@ -178,6 +181,7 @@ class AccessService {
     const keyStore = await keytokenModel.findOne({
       refreshToken: refreshToken,
     });
+
     if (!keyStore) throw new NotFoundError("Not found keyStore");
 
     //check refreshToken het han hay chua
@@ -205,6 +209,7 @@ class AccessService {
       }),
       tokens,
     };
+
   }
   static async requestResetPassword({ email }) {
     const foundUser = await userModel.findOne({ user_email: email }).lean();
@@ -243,6 +248,7 @@ class AccessService {
       throw new BadRequestError("Old password and new password are required");
     const foundUser = await userModel.findById(userId).lean();
     if (!foundUser) throw new NotFoundError("User not found");
+
 
     const passwordHash = foundUser.user_password;
     const match = await bcrypt.compare(oldPassword, passwordHash);
