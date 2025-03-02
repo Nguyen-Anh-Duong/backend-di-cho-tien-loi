@@ -3,12 +3,10 @@
 const { default: mongoose } = require("mongoose");
 require("dotenv").config();
 
-
 const connectString =
-  process.env.ENViRONMENT === "dev"
+  process.env.ENVIRONMENT === "dev"
     ? process.env.DB_URL_TEST
     : process.env.DB_URL;
-
 
 mongoose
   .connect(connectString)
@@ -18,6 +16,5 @@ mongoose
     console.log("Connect error!!");
     console.error(error);
   });
-
 
 module.exports = mongoose;
