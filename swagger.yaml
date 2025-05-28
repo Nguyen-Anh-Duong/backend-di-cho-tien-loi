@@ -8,7 +8,7 @@ info:
     email: nguyenanhduong112004@gmail.com
   version: 1.0.0
 servers:
-  - url: https://bendi.onrender.com/v1/api/
+  - url: https://benri.duongdev.dpdns.org/v1/api/
 tags:
   - name: auth
   - name: basket
